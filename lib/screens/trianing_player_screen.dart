@@ -14,6 +14,9 @@ class PlayersListScreen extends StatefulWidget {
 class _PlayersListScreenState extends State<PlayersListScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<FutsalPlayer> _players = [];
+  List<FutsalPlayer> _filteredPlayers = [];
+  String _searchQuery = '';
+  String _selectedTime = 'All';
 
   @override
   void initState() {
@@ -25,6 +28,45 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
     final players = await _dbHelper.getAllPlayers();
     setState(() {
       _players = players.cast<FutsalPlayer>();
+      _applyFilters();
+    });
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredPlayers = _players.where((player) {
+        // فیلتر کردن بازیکنان بر اساس زمان (زمان تمرین)
+        final matchesTime =
+            _selectedTime == 'All' || player.registrationTime == _selectedTime;
+
+        // اگر ساعت ۱۰ انتخاب شده باشد، باید بازیکنانی که در ساعت ۱۰ ثبت‌نام کرده‌اند را نشان دهد
+        if (_selectedTime == '10:00') {
+          return player.registrationTime == '10:00';
+        }
+        // اگر ساعت ۱۲ انتخاب شده باشد، باید بازیکنانی که در ساعت ۱۲ ثبت‌نام کرده‌اند را نشان دهد
+        else if (_selectedTime == '12:00') {
+          return player.registrationTime == '12:00';
+        } else if (_selectedTime == '14:00') {
+          return player.registrationTime == '14:00';
+        }
+        // همینطور برای بقیه ساعات ادامه دهید.
+        else if (_selectedTime == '16:00') {
+          return player.registrationTime == '16:00';
+        } else if (_selectedTime == '18:00') {
+          return player.registrationTime == '18:00';
+        } else if (_selectedTime == '20:00') {
+          return player.registrationTime == '20:00';
+        }
+
+        // فیلتر کردن بر اساس جستجوی نام بازیکن
+        final matchesSearch = player.firstName
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
+            player.lastName.toLowerCase().contains(_searchQuery.toLowerCase());
+
+        // برای همه فیلترها باید بررسی شود
+        return matchesTime && matchesSearch;
+      }).toList();
     });
   }
 
@@ -35,29 +77,71 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         title: const Text('Players List'),
         centerTitle: true,
         backgroundColor: Colors.blue.shade700,
+        actions: [
+          // جستجو
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: PlayerSearchDelegate(
+                  players: _players,
+                  onSearchSelected: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                      _applyFilters();
+                    });
+                  },
+                ),
+              );
+            },
+          ),
+          // فیلتر
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.filter_list),
+            onSelected: (value) {
+              setState(() {
+                _selectedTime = value;
+                _applyFilters();
+              });
+            },
+            itemBuilder: (context) {
+              return <PopupMenuEntry<String>>[
+                const PopupMenuItem(value: 'All', child: Text('All')),
+                const PopupMenuItem(value: '10:00', child: Text('10:00')),
+                const PopupMenuItem(value: '12:00', child: Text('12:00')),
+                const PopupMenuItem(value: '14:00', child: Text('14:00')),
+                const PopupMenuItem(value: '16:00', child: Text('16:00')),
+                const PopupMenuItem(value: '18:00', child: Text('18:00')),
+                const PopupMenuItem(value: '20:00', child: Text('20:00')),
+              ];
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: _players.isEmpty
+        child: _filteredPlayers.isEmpty
             ? const Center(
-          child: Text(
-            'No players added yet.',
-            style: TextStyle(fontSize: 18, color: Colors.blueGrey),
-          ),
-        )
+                child: Text(
+                  'No players found.',
+                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+                ),
+              )
             : ListView.builder(
-          itemCount: _players.length,
-          itemBuilder: (context, index) {
-            final player = _players[index];
-            return _buildPlayerTile(player);
-          },
-        ),
+                itemCount: _filteredPlayers.length,
+                itemBuilder: (context, index) {
+                  final player = _filteredPlayers[index];
+                  return _buildPlayerTile(player);
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>const AddFutsalPlayerScreen()),
+            MaterialPageRoute(
+                builder: (context) => const AddFutsalPlayerScreen()),
           );
           _loadPlayers();
         },
@@ -99,6 +183,65 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         tileColor: Colors.white,
         trailing: const Icon(Icons.chevron_right, color: Colors.blue),
       ),
+    );
+  }
+}
+
+class PlayerSearchDelegate extends SearchDelegate<String> {
+  final List<FutsalPlayer> players;
+  final ValueChanged<String> onSearchSelected;
+
+  PlayerSearchDelegate({required this.players, required this.onSearchSelected});
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    onSearchSelected(query);
+    close(context, query);
+    return Container();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = players
+        .where((player) =>
+            player.firstName.toLowerCase().contains(query.toLowerCase()) ||
+            player.lastName.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        final player = suggestions[index];
+        return ListTile(
+          title: Text('${player.firstName} ${player.lastName}'),
+          onTap: () {
+            query = '${player.firstName} ${player.lastName}';
+            showResults(context);
+          },
+        );
+      },
     );
   }
 }
