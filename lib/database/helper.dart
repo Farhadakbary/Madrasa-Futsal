@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:futsal/database/player_modle.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,7 +16,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3, // افزایش نسخه دیتابیس
+      version: 3,
       onCreate: (db, version) {
         db.execute('''
           CREATE TABLE players (

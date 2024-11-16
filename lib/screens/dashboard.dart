@@ -36,8 +36,7 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       const CircleAvatar(
                         radius: 45,
-                        backgroundImage:
-                            AssetImage('assets/image/logo.jfif'),
+                        backgroundImage: AssetImage('assets/image/logo.jfif'),
                         backgroundColor: Colors.white,
                       ),
                       const SizedBox(height: 10),
@@ -57,32 +56,25 @@ class DashboardScreen extends StatelessWidget {
                   context,
                   icon: Icons.backup,
                   title: 'Backup',
-                  onTap: () {
-                  },
+                  onTap: () {},
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.settings,
                   title: 'Settings',
-                  onTap: () {
-
-                  },
+                  onTap: () {},
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.info_outline,
                   title: 'About',
-                  onTap: () {
-
-                  },
+                  onTap: () {},
                 ),
               ],
             ),
           ],
         ),
       ),
-
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -126,40 +118,37 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () {
+                  ActionCard(
+                    title: 'Trainers',
+                    value: '150',
+                    icon: Icons.people,
+                    color: Colors.blue.shade500,
+                    onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const PlayersListScreen()));
                     },
-                    child: DashboardCard(
-                      title: 'Trainers',
-                      value: '150',
-                      icon: Icons.people,
-                      color: Colors.blue.shade500,
-                    ),
                   ),
-                  GestureDetector(
-                    onTap: () {
+                  ActionCard(
+                    title: 'Players',
+                    value: '40',
+                    icon: Icons.people_outline,
+                    color: Colors.green.shade500,
+                    onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
                                   const MainTeamPlayersListScreen()));
                     },
-                    child: DashboardCard(
-                      title: 'Players',
-                      value: '40',
-                      icon: Icons.people_outline,
-                      color: Colors.green.shade500,
-                    ),
                   ),
-                  DashboardCard(
+                  ActionCard(
                     title: 'Tactics',
                     value: '20',
                     icon: Icons.golf_course_rounded,
                     color: Colors.orange.shade500,
+                    onPressed: (){},
                   ),
                 ],
               ),
@@ -168,15 +157,17 @@ class DashboardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ActionCard(
-                    title: 'Add Player',
-                    icon: Icons.person_add,
+                    title: 'All Reports',
+                    icon: Icons.report,
                     color: Colors.blue.shade400,
                     onPressed: () {},
+                    value: '',
                   ),
                   ActionCard(
                     title: 'Results',
                     icon: Icons.edit_note_sharp,
                     color: Colors.green.shade400,
+                    value: '',
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -218,73 +209,22 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class DashboardCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const DashboardCard({
-    Key? key,
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 5,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: color,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 40),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                style: GoogleFonts.roboto(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                value,
-                style: GoogleFonts.roboto(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class ActionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
+  final String value;
 
-  const ActionCard({
-    Key? key,
-    required this.title,
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
+  const ActionCard(
+      {Key? key,
+      required this.title,
+      required this.icon,
+      required this.color,
+      required this.onPressed,
+      required this.value})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -307,11 +247,19 @@ class ActionCard extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.roboto(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
+                Text(
+                  value,
+                  style: GoogleFonts.roboto(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                )
               ],
             ),
           ),

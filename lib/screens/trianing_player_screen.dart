@@ -35,21 +35,17 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
   void _applyFilters() {
     setState(() {
       _filteredPlayers = _players.where((player) {
-        // فیلتر کردن بازیکنان بر اساس زمان (زمان تمرین)
         final matchesTime =
             _selectedTime == 'All' || player.registrationTime == _selectedTime;
 
-        // اگر ساعت ۱۰ انتخاب شده باشد، باید بازیکنانی که در ساعت ۱۰ ثبت‌نام کرده‌اند را نشان دهد
         if (_selectedTime == '10:00') {
           return player.registrationTime == '10:00';
         }
-        // اگر ساعت ۱۲ انتخاب شده باشد، باید بازیکنانی که در ساعت ۱۲ ثبت‌نام کرده‌اند را نشان دهد
         else if (_selectedTime == '12:00') {
           return player.registrationTime == '12:00';
         } else if (_selectedTime == '14:00') {
           return player.registrationTime == '14:00';
         }
-        // همینطور برای بقیه ساعات ادامه دهید.
         else if (_selectedTime == '16:00') {
           return player.registrationTime == '16:00';
         } else if (_selectedTime == '18:00') {
@@ -57,14 +53,11 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         } else if (_selectedTime == '20:00') {
           return player.registrationTime == '20:00';
         }
-
-        // فیلتر کردن بر اساس جستجوی نام بازیکن
         final matchesSearch = player.firstName
                 .toLowerCase()
                 .contains(_searchQuery.toLowerCase()) ||
             player.lastName.toLowerCase().contains(_searchQuery.toLowerCase());
 
-        // برای همه فیلترها باید بررسی شود
         return matchesTime && matchesSearch;
       }).toList();
     });
