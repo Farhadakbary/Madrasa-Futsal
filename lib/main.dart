@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:futsal/screens/dashboard.dart';
-import 'package:futsal/screens/trianing_player_screen.dart';
 void main(){
   runApp(const MyApp());
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
+import 'package:futsal/screens/results.dart';
+
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
@@ -9,7 +11,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Futsal Dashboard"),
+        title: const Text("Futsal "),
         centerTitle: true,
         backgroundColor: Colors.red.shade700,
       ),
@@ -29,12 +31,14 @@ class DashboardScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Welcome Back, Yasin',
-                      style: GoogleFonts.roboto(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Center(
+                      child: Text(
+                        'Welcome Back',
+                        style: GoogleFonts.roboto(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -129,7 +133,6 @@ class DashboardScreen extends StatelessWidget {
                     icon: Icons.person_add,
                     color: Colors.blue.shade400,
                     onPressed: () {
-                      // Navigate to add player screen
                     },
                   ),
                   ActionCard(
@@ -137,7 +140,7 @@ class DashboardScreen extends StatelessWidget {
                     icon: Icons.watch,
                     color: Colors.green.shade400,
                     onPressed: () {
-                      // Navigate to view matches screen
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> AddNoteScreen()));
                     },
                   ),
                 ],

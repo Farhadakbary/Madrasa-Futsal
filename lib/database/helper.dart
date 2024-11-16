@@ -17,7 +17,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // افزایش نسخه دیتابیس
+      version: 3, // افزایش نسخه دیتابیس
       onCreate: (db, version) {
         db.execute('''
           CREATE TABLE players (
@@ -47,6 +47,18 @@ class DatabaseHelper {
             age INTEGER
           )
         ''');
+
+        db.execute('''
+          CREATE TABLE game_notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            teamName TEXT,
+            opponentTeam TEXT,
+            matchResult TEXT,
+            matchDate TEXT,
+            topScorer TEXT,
+            description TEXT
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -65,9 +77,24 @@ class DatabaseHelper {
             )
           ''');
         }
+        if (oldVersion < 3) {
+          await db.execute('''
+            CREATE TABLE game_notes (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              teamName TEXT,
+              opponentTeam TEXT,
+              matchResult TEXT,
+              matchDate TEXT,
+              topScorer TEXT,
+              description TEXT
+            )
+          ''');
+        }
       },
     );
   }
+
+  // عملیات مربوط به جدول players
   Future<int> insertPlayer(FutsalPlayer player) async {
     final db = await instance.database;
     return await db.insert('players', player.toMap());
@@ -147,5 +174,46 @@ class DatabaseHelper {
   Future<void> deleteAllMainTeamPlayers() async {
     final db = await instance.database;
     await db.delete('main_team_players');
+  }
+
+  // عملیات مربوط به جدول game_notes
+  Future<int> insertGameNote(Map<String, dynamic> note) async {
+    final db = await instance.database;
+    return await db.insert('game_notes', note);
+  }
+
+  Future<List<Map<String, dynamic>>> getAllGameNotes() async {
+    final db = await instance.database;
+    try {
+      final result = await db.query('game_notes');
+      return result;
+    } catch (e) {
+      print("Error fetching: $e");
+      return [];
+    }
+  }
+
+  Future<int> updateGameNote(int id, Map<String, dynamic> note) async {
+    final db = await instance.database;
+    return await db.update(
+      'game_notes',
+      note,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteGameNote(int id) async {
+    final db = await instance.database;
+    return await db.delete(
+      'game_notes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteAllGameNotes() async {
+    final db = await instance.database;
+    await db.delete('game_notes');
   }
 }
