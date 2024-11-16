@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:futsal/screens/notes_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
-import 'package:futsal/screens/results.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -15,6 +15,74 @@ class DashboardScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.red.shade700,
       ),
+      drawer: Drawer(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedBackground(),
+            ),
+            ListView(
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade700.withOpacity(0.85),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircleAvatar(
+                        radius: 45,
+                        backgroundImage:
+                            AssetImage('assets/image/logo.jfif'),
+                        backgroundColor: Colors.white,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Team Name',
+                        style: GoogleFonts.roboto(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.backup,
+                  title: 'Backup',
+                  onTap: () {
+                  },
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.settings,
+                  title: 'Settings',
+                  onTap: () {
+
+                  },
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.info_outline,
+                  title: 'About',
+                  onTap: () {
+
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -33,7 +101,7 @@ class DashboardScreen extends StatelessWidget {
                   children: [
                     Center(
                       child: Text(
-                        'Welcome Back',
+                        '       Welcome Back',
                         style: GoogleFonts.roboto(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -45,7 +113,6 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
 
-              // Dashboard Sections
               const SizedBox(height: 20),
               Text(
                 'Quick Stats',
@@ -60,22 +127,29 @@ class DashboardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const MainTeamPlayersListScreen()));
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PlayersListScreen()));
                     },
                     child: DashboardCard(
-                      title: 'Team',
+                      title: 'Trainers',
                       value: '150',
                       icon: Icons.people,
                       color: Colors.blue.shade500,
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const PlayersListScreen()));
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MainTeamPlayersListScreen()));
                     },
                     child: DashboardCard(
-                      title: 'Trainers',
+                      title: 'Players',
                       value: '40',
                       icon: Icons.people_outline,
                       color: Colors.green.shade500,
@@ -84,22 +158,43 @@ class DashboardScreen extends StatelessWidget {
                   DashboardCard(
                     title: 'Tactics',
                     value: '20',
-                    icon: Icons.fitness_center,
+                    icon: Icons.golf_course_rounded,
                     color: Colors.orange.shade500,
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ActionCard(
+                    title: 'Add Player',
+                    icon: Icons.person_add,
+                    color: Colors.blue.shade400,
+                    onPressed: () {},
+                  ),
+                  ActionCard(
+                    title: 'Results',
+                    icon: Icons.edit_note_sharp,
+                    color: Colors.green.shade400,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NotesListScreen()));
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
               Text(
-                'Detailed Stats',
+                "Detailed States",
                 style: GoogleFonts.roboto(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 10),
               Container(
                 height: 250,
                 decoration: BoxDecoration(
@@ -109,43 +204,11 @@ class DashboardScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     'Chart/Graph will be here',
-                    style: GoogleFonts.roboto(fontSize: 18, color: Colors.black),
+                    style:
+                        GoogleFonts.roboto(fontSize: 18, color: Colors.black),
                   ),
                 ),
               ),
-
-              const SizedBox(height: 30),
-
-              Text(
-                'Actions',
-                style: GoogleFonts.roboto(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ActionCard(
-                    title: 'Add Player',
-                    icon: Icons.person_add,
-                    color: Colors.blue.shade400,
-                    onPressed: () {
-                    },
-                  ),
-                  ActionCard(
-                    title: 'View Matches',
-                    icon: Icons.watch,
-                    color: Colors.green.shade400,
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> AddNoteScreen()));
-                    },
-                  ),
-                ],
-              ),
-
               const SizedBox(height: 30),
             ],
           ),
@@ -160,7 +223,6 @@ class DashboardCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
-
 
   const DashboardCard({
     Key? key,
@@ -232,7 +294,8 @@ class ActionCard extends StatelessWidget {
         child: Card(
           elevation: 5,
           margin: const EdgeInsets.symmetric(horizontal: 8),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           color: color,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -256,4 +319,89 @@ class ActionCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class AnimatedBackground extends StatefulWidget {
+  @override
+  _AnimatedBackgroundState createState() => _AnimatedBackgroundState();
+}
+
+class _AnimatedBackgroundState extends State<AnimatedBackground>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: BackgroundPainter(progress: _animation.value),
+        );
+      },
+    );
+  }
+}
+
+class BackgroundPainter extends CustomPainter {
+  final double progress;
+
+  BackgroundPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          Colors.black.withOpacity(0.9),
+          Colors.yellow.withOpacity(1),
+          Colors.blue.withOpacity(0.9),
+        ],
+        stops: [progress, progress + 0.2, progress + 0.4],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+Widget _buildDrawerItem(
+  BuildContext context, {
+  required IconData icon,
+  required String title,
+  required VoidCallback onTap,
+}) {
+  return ListTile(
+    leading: Icon(icon, color: Colors.white),
+    title: Text(
+      title,
+      style: GoogleFonts.roboto(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+    ),
+    onTap: onTap,
+  );
 }

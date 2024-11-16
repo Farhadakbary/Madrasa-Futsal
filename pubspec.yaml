@@ -25,8 +25,8 @@ flutter:
   uses-material-design: true
 
 #  # مشخص کردن منابع تصویری
-#  assets:
-#    - images/default_player.png # مثال
+  assets:
+    - assets/image/logo.jfif
 #
 #  # مشخص کردن فونت‌های سفارشی
 #  fonts:

@@ -94,7 +94,6 @@ class DatabaseHelper {
     );
   }
 
-  // عملیات مربوط به جدول players
   Future<int> insertPlayer(FutsalPlayer player) async {
     final db = await instance.database;
     return await db.insert('players', player.toMap());
@@ -135,7 +134,6 @@ class DatabaseHelper {
     await db.delete('players');
   }
 
-  // عملیات مربوط به جدول main_team_players
   Future<int> insertMainTeamPlayer(Map<String, dynamic> player) async {
     final db = await instance.database;
     return await db.insert('main_team_players', player);
@@ -176,7 +174,6 @@ class DatabaseHelper {
     await db.delete('main_team_players');
   }
 
-  // عملیات مربوط به جدول game_notes
   Future<int> insertGameNote(Map<String, dynamic> note) async {
     final db = await instance.database;
     return await db.insert('game_notes', note);

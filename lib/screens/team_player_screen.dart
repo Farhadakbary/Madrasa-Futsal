@@ -28,7 +28,6 @@ class _MainTeamPlayersListScreenState
       _mainTeamPlayers = players;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -58,14 +57,13 @@ class _MainTeamPlayersListScreenState
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // رفتن به صفحه افزودن بازیکن تیم اصلی
           await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const AddMainTeamPlayerScreen(),
             ),
           );
-          _loadMainTeamPlayers(); // به‌روز رسانی لیست پس از بازگشت
+          _loadMainTeamPlayers();
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.green,

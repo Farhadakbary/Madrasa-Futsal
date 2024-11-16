@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:futsal/database/helper.dart';
@@ -50,13 +49,20 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         'description': _descriptionController.text,
       };
 
-      await DatabaseHelper.instance.insertGameNote(note);
+      final id = await DatabaseHelper.instance
+          .insertGameNote(note); // درج نوت در دیتابیس
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Note saved successfully!')),
-      );
-
-      Navigator.pop(context);
+      if (id > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Note saved successfully!')),
+        );
+        Navigator.pop(context, note); // بازگشت به صفحه اصلی با ارسال نوت جدید
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Failed to save note. Please try again.')),
+        );
+      }
     }
   }
 
@@ -142,13 +148,14 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     Expanded(
                       child: Text(
                         'Match Date: $_matchDate',
-                        style: const TextStyle(fontSize: 16, color: Colors.blue),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.blue),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () => _selectDate(context),
                       style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
                       child: const Text('Select Date'),
                     ),
                   ],
