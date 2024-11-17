@@ -14,7 +14,7 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Futsal "),
         centerTitle: true,
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: Colors.red.shade400,
       ),
       drawer: Drawer(
         child: Stack(
@@ -31,6 +31,7 @@ class DashboardScreen extends StatelessWidget {
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
                     ),
+                      image:const DecorationImage(image: AssetImage('assets/image/team.jpg'),fit: BoxFit.cover)
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Team Name',
+                        'FC Barcelona',
                         style: GoogleFonts.roboto(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -124,9 +125,20 @@ class DashboardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ActionCard(
-                    title: 'Trainers',
-                    value: '150',
+                    title: 'Players',
                     icon: Icons.people,
+                    color: Colors.green.shade500,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const MainTeamPlayersListScreen()));
+                    },
+                  ),
+                  ActionCard(
+                    title: 'Trainers',
+                    icon: Icons.people_outline,
                     color: Colors.blue.shade500,
                     onPressed: () {
                       Navigator.push(
@@ -136,21 +148,7 @@ class DashboardScreen extends StatelessWidget {
                     },
                   ),
                   ActionCard(
-                    title: 'Players',
-                    value: '40',
-                    icon: Icons.people_outline,
-                    color: Colors.green.shade500,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const MainTeamPlayersListScreen()));
-                    },
-                  ),
-                  ActionCard(
                     title: 'Tactics',
-                    value: '20',
                     icon: Icons.golf_course_rounded,
                     color: Colors.orange.shade500,
                     onPressed: (){},
@@ -166,13 +164,11 @@ class DashboardScreen extends StatelessWidget {
                     icon: Icons.report,
                     color: Colors.blue.shade400,
                     onPressed: () {},
-                    value: '',
                   ),
                   ActionCard(
                     title: 'Results',
                     icon: Icons.edit_note_sharp,
                     color: Colors.green.shade400,
-                    value: '',
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -220,7 +216,7 @@ class ActionCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
-  final String value;
+
 
   const ActionCard(
       {Key? key,
@@ -228,7 +224,7 @@ class ActionCard extends StatelessWidget {
       required this.icon,
       required this.color,
       required this.onPressed,
-      required this.value})
+      })
       : super(key: key);
 
   @override
@@ -257,14 +253,6 @@ class ActionCard extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                Text(
-                  value,
-                  style: GoogleFonts.roboto(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                )
               ],
             ),
           ),
@@ -323,9 +311,9 @@ class BackgroundPainter extends CustomPainter {
     final Paint paint = Paint()
       ..shader = LinearGradient(
         colors: [
-          Colors.black.withOpacity(0.9),
-          Colors.yellow.withOpacity(1),
-          Colors.blue.withOpacity(0.9),
+          Colors.black.withOpacity(0.8),
+          Colors.red.withOpacity(1),
+          Colors.black.withOpacity(0.8)
         ],
         stops: [progress, progress + 0.2, progress + 0.4],
         begin: Alignment.topLeft,

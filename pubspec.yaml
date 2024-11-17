@@ -28,6 +28,7 @@ flutter:
 #  # مشخص کردن منابع تصویری
   assets:
     - assets/image/logo.jfif
+    - assets/image/team.jpg
 #
 #  # مشخص کردن فونت‌های سفارشی
 #  fonts:

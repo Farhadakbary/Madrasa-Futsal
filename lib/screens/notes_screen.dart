@@ -39,7 +39,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
       appBar: AppBar(
         title: const Text('Notes'),
         centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
+        backgroundColor: Colors.green,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -59,7 +59,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.green,
         onPressed: () async {
           final newNote = await Navigator.push(
             context,
@@ -88,9 +88,9 @@ class _NotesListScreenState extends State<NotesListScreen> {
         leading: CircleAvatar(
           radius: 30,
           backgroundColor: Colors.blue.shade100,
-          child: Icon(
+          child: const Icon(
             Icons.sticky_note_2_rounded,
-            color: Colors.blue.shade700,
+            color: Colors.green,
             size: 30,
           ),
         ),
@@ -99,7 +99,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
+            color: Colors.green,
           ),
         ),
         subtitle: Text(
@@ -119,7 +119,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
                 _showDeleteConfirmationDialog(note['id']); // تأیید حذف
               },
             ),
-            const Icon(Icons.more_vert, color: Colors.blue),
+            const Icon(Icons.more_vert, color: Colors.green),
           ],
         ),
       ),

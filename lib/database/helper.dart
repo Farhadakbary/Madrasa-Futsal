@@ -21,7 +21,7 @@ class DatabaseHelper {
       path,
       version: 3,
       onCreate: (db, version) {
-        db.execute(''' 
+        db.execute('''
           CREATE TABLE players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             firstName TEXT,
@@ -35,7 +35,7 @@ class DatabaseHelper {
           )
         ''');
 
-        db.execute(''' 
+        db.execute('''
           CREATE TABLE main_team_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             firstName TEXT,
@@ -50,7 +50,7 @@ class DatabaseHelper {
           )
         ''');
 
-        db.execute(''' 
+        db.execute('''
           CREATE TABLE game_notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             teamName TEXT,
@@ -64,7 +64,7 @@ class DatabaseHelper {
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
-          await db.execute(''' 
+          await db.execute('''
             CREATE TABLE main_team_players (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               firstName TEXT,
@@ -80,7 +80,7 @@ class DatabaseHelper {
           ''');
         }
         if (oldVersion < 3) {
-          await db.execute(''' 
+          await db.execute('''
             CREATE TABLE game_notes (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               teamName TEXT,
@@ -96,13 +96,11 @@ class DatabaseHelper {
     );
   }
 
-  // Insert player into the database
   Future<int> insertPlayer(FutsalPlayer player) async {
     final db = await instance.database;
     return await db.insert('players', player.toMap());
   }
 
-  // Get all players from the database
   Future<List<FutsalPlayer>> getAllPlayers() async {
     final db = await instance.database;
     try {
@@ -114,7 +112,6 @@ class DatabaseHelper {
     }
   }
 
-  // Update player information in the database
   Future<int> updatePlayer(FutsalPlayer player) async {
     final db = await instance.database;
     return await db.update(
@@ -125,7 +122,6 @@ class DatabaseHelper {
     );
   }
 
-  // Delete a player from the database
   Future<int> deletePlayer(int id) async {
     final db = await instance.database;
     return await db.delete(
@@ -135,19 +131,16 @@ class DatabaseHelper {
     );
   }
 
-  // Delete all players from the database
   Future<void> deleteAllPlayers() async {
     final db = await instance.database;
     await db.delete('players');
   }
 
-  // Insert a main team player into the database
   Future<int> insertMainTeamPlayer(Map<String, dynamic> player) async {
     final db = await instance.database;
     return await db.insert('main_team_players', player);
   }
 
-  // Get all main team players from the database
   Future<List<Map<String, dynamic>>> getAllMainTeamPlayers() async {
     final db = await instance.database;
     try {
@@ -159,7 +152,6 @@ class DatabaseHelper {
     }
   }
 
-  // Update main team player information in the database
   Future<int> updateMainTeamPlayer(int id, Map<String, dynamic> player) async {
     final db = await instance.database;
     return await db.update(
@@ -170,7 +162,6 @@ class DatabaseHelper {
     );
   }
 
-  // Delete a main team player from the database
   Future<int> deleteMainTeamPlayer(int id) async {
     final db = await instance.database;
     return await db.delete(
@@ -180,19 +171,16 @@ class DatabaseHelper {
     );
   }
 
-  // Delete all main team players from the database
   Future<void> deleteAllMainTeamPlayers() async {
     final db = await instance.database;
     await db.delete('main_team_players');
   }
 
-  // Insert a game note into the database
   Future<int> insertGameNote(Map<String, dynamic> note) async {
     final db = await instance.database;
     return await db.insert('game_notes', note);
   }
 
-  // Get all game notes from the database
   Future<List<Map<String, dynamic>>> getAllGameNotes() async {
     final db = await instance.database;
     try {
@@ -204,7 +192,6 @@ class DatabaseHelper {
     }
   }
 
-  // Update game note information in the database
   Future<int> updateGameNote(int id, Map<String, dynamic> note) async {
     final db = await instance.database;
     return await db.update(
@@ -215,7 +202,6 @@ class DatabaseHelper {
     );
   }
 
-  // Delete a game note from the database
   Future<int> deleteGameNote(int id) async {
     final db = await instance.database;
     return await db.delete(
@@ -225,24 +211,20 @@ class DatabaseHelper {
     );
   }
 
-  // Delete all game notes from the database
   Future<void> deleteAllGameNotes() async {
     final db = await instance.database;
     await db.delete('game_notes');
   }
 
-  // ------------------ Backup and Restore Methods ------------------
-
-  // Backup the database to a file
-  Future<void> backupDatabase() async {
+  //Backup codes
+  Future<void> backupDatabase({String? customPath}) async {
     final db = await instance.database;
 
-    // Get data from the tables
+    // استخراج داده‌های جداول
     final players = await db.query('players');
     final mainTeamPlayers = await db.query('main_team_players');
     final gameNotes = await db.query('game_notes');
 
-    // Convert data to JSON format
     final backupData = {
       'players': players,
       'main_team_players': mainTeamPlayers,
@@ -250,47 +232,53 @@ class DatabaseHelper {
     };
     final jsonData = jsonEncode(backupData);
 
-    // Save the JSON data to a file
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/futsal_backup.json');
+    // تنظیم مسیر ذخیره‌سازی
+    final dir = customPath != null
+        ? Directory(customPath)
+        : await getApplicationDocumentsDirectory();
 
-    // Write the JSON data to the file
+    // ایجاد دایرکتوری در صورت عدم وجود
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+
+    final file = File('${dir.path}/futsal_backup.json');
     await file.writeAsString(jsonData);
   }
 
-  // Restore the database from a backup file
-  Future<void> restoreDatabase() async {
+  Future<void> restoreDatabase({String? customPath}) async {
     final db = await instance.database;
 
-    // Get the backup file path
-    final dir = await getApplicationDocumentsDirectory();
+    // تنظیم مسیر خواندن فایل بکاپ
+    final dir = customPath != null
+        ? Directory(customPath)
+        : await getApplicationDocumentsDirectory();
+
     final file = File('${dir.path}/futsal_backup.json');
 
-    // Check if the backup file exists
+    // بررسی وجود فایل بکاپ
     if (!file.existsSync()) {
-      throw Exception('No backup file found!');
+      throw Exception('No backup file found in the specified path!');
     }
 
-    // Read the JSON data from the file
     final jsonData = await file.readAsString();
     final backupData = jsonDecode(jsonData);
 
-    // Clear the existing data from the tables
-    await db.delete('players');
-    await db.delete('main_team_players');
-    await db.delete('game_notes');
+    await db.transaction((txn) async {
+      await txn.delete('players');
+      await txn.delete('main_team_players');
+      await txn.delete('game_notes');
 
-    // Insert the backup data into the tables
-    for (final player in backupData['players']) {
-      await db.insert('players', Map<String, dynamic>.from(player));
-    }
-
-    for (final player in backupData['main_team_players']) {
-      await db.insert('main_team_players', Map<String, dynamic>.from(player));
-    }
-
-    for (final note in backupData['game_notes']) {
-      await db.insert('game_notes', Map<String, dynamic>.from(note));
-    }
+      for (final player in backupData['players']) {
+        await txn.insert('players', Map<String, dynamic>.from(player));
+      }
+      for (final player in backupData['main_team_players']) {
+        await txn.insert('main_team_players', Map<String, dynamic>.from(player));
+      }
+      for (final note in backupData['game_notes']) {
+        await txn.insert('game_notes', Map<String, dynamic>.from(note));
+      }
+    });
   }
+
 }

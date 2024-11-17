@@ -9,27 +9,24 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isDarkMode = false; // مقداردهی پیش‌فرض
-  String _selectedLanguage = 'en'; // مقداردهی پیش‌فرض
-  double _fontSize = 16.0; // مقداردهی پیش‌فرض
+  bool _isDarkMode = false;
+  String _selectedLanguage = 'en';
+  double _fontSize = 16.0;
 
   @override
   void initState() {
     super.initState();
-    _loadSettings(); // بارگذاری تنظیمات ذخیره‌شده
+    _loadSettings();
   }
-
-  // بارگذاری تنظیمات ذخیره‌شده
   Future<void> _loadSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isDarkMode = prefs.getBool('isDarkMode') ?? false; // پیش‌فرض: خاموش
-      _selectedLanguage = prefs.getString('language') ?? 'en'; // پیش‌فرض: انگلیسی
-      _fontSize = prefs.getDouble('fontSize') ?? 16.0; // پیش‌فرض: 16
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+      _selectedLanguage = prefs.getString('language') ?? 'en';
+      _fontSize = prefs.getDouble('fontSize') ?? 16.0;
     });
   }
 
-  // ذخیره تنظیمات
   Future<void> _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', _isDarkMode);
@@ -37,7 +34,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setDouble('fontSize', _fontSize);
   }
 
-  // بازنشانی تنظیمات
   Future<void> _resetSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -56,10 +52,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: _isDarkMode ? Colors.black : Colors.blue,
         centerTitle: true,
       ),
-      body:_isSettingsLoaded() ? ListView(
+      body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // تنظیمات تم
+
           SwitchListTile(
             title: Text(
               'Dark Mode',
@@ -70,12 +66,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 _isDarkMode = value;
               });
-              _saveSettings(); // ذخیره تغییر
+              _saveSettings();
             },
           ),
           const Divider(),
 
-          // تنظیم زبان
           ListTile(
             title: Text(
               'Language',
@@ -88,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() {
                     _selectedLanguage = newValue;
                   });
-                  _saveSettings(); // ذخیره تغییر
+                  _saveSettings();
                 }
               },
               items: const [
@@ -105,7 +100,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
 
-          // تنظیم اندازه فونت
           ListTile(
             title: Text(
               'Font Size',
@@ -119,33 +113,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 setState(() {
                   _fontSize = value;
                 });
-                _saveSettings(); // ذخیره تغییر
+                _saveSettings();
               },
             ),
           ),
           const Divider(),
 
-          // دکمه بازنشانی
           ListTile(
             title: Center(
               child: ElevatedButton(
                 onPressed: () {
-                  _resetSettings(); // بازنشانی تنظیمات
+                  _resetSettings();
                 },
                 child: const Text('Reset Settings'),
               ),
             ),
           ),
         ],
-      )
-            : const Center(child: CircularProgressIndicator()), // نمایش لودینگ تا زمانی که تنظیمات بارگذاری شوند
+      ),
     backgroundColor: _isDarkMode ? Colors.grey.shade900 : Colors.white,
     );
   }
-    bool _isSettingsLoaded() {
-      return _isDarkMode != null &&
-          _selectedLanguage.isNotEmpty &&
-          _fontSize > 0;
 
-}
 }

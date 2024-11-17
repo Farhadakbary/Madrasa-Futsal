@@ -50,13 +50,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       };
 
       final id = await DatabaseHelper.instance
-          .insertGameNote(note); // درج نوت در دیتابیس
+          .insertGameNote(note);
 
       if (id > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Note saved successfully!')),
         );
-        Navigator.pop(context, note); // بازگشت به صفحه اصلی با ارسال نوت جدید
+        Navigator.pop(context, note);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -81,7 +81,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Match Note'),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.green,
         centerTitle: true,
       ),
       body: Container(
@@ -97,7 +97,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                    color: Colors.green,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -149,13 +149,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       child: Text(
                         'Match Date: $_matchDate',
                         style:
-                            const TextStyle(fontSize: 16, color: Colors.blue),
+                            const TextStyle(fontSize: 16, color: Colors.green),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () => _selectDate(context),
                       style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                          ElevatedButton.styleFrom(backgroundColor: Colors.green),
                       child: const Text('Select Date'),
                     ),
                   ],
