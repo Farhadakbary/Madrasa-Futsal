@@ -97,7 +97,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Futsal Player'),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         centerTitle: true,
       ),
       body: Container(
@@ -282,8 +282,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                     ElevatedButton(
                       onPressed: _pickImage,
                       style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      child: const Text('Pick Image'),
+                          ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
                     ),
                   ],
                 ),

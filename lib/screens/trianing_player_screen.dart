@@ -71,9 +71,9 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         centerTitle: true,
         backgroundColor: Colors.blue.shade700,
         actions: [
-          // جستجو
+
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search,color: Colors.black,),
             onPressed: () {
               showSearch(
                 context: context,
@@ -89,9 +89,8 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
               );
             },
           ),
-          // فیلتر
           PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list,color: Colors.black,),
             onSelected: (value) {
               setState(() {
                 _selectedTime = value;
@@ -138,7 +137,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
           );
           _loadPlayers();
         },
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),
     );
@@ -223,18 +222,20 @@ class PlayerSearchDelegate extends SearchDelegate<String> {
             player.lastName.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        final player = suggestions[index];
-        return ListTile(
-          title: Text('${player.firstName} ${player.lastName}'),
-          onTap: () {
-            query = '${player.firstName} ${player.lastName}';
-            showResults(context);
-          },
-        );
-      },
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final player = suggestions[index];
+          return ListTile(
+            title: Text('${player.firstName} ${player.lastName}'),
+            onTap: () {
+              query = '${player.firstName} ${player.lastName}';
+              showResults(context);
+            },
+          );
+        },
+      ),
     );
   }
 }

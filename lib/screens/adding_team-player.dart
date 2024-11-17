@@ -99,7 +99,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Main Team Player'),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.green,
         centerTitle: true,
       ),
       body: Container(
@@ -240,7 +240,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                     ElevatedButton(
                       onPressed: _pickImage,
                       style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
                       child: const Text('Pick Image'),
                     ),
                   ],
@@ -248,7 +248,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Registration Date: $_registrationDate',
-                  style: const TextStyle(fontSize: 16, color: Colors.blue),
+                  style: const TextStyle(fontSize: 16, color: Colors.green),
                 ),
                 const SizedBox(height: 24),
                 Row(
