@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:futsal/screens/drawer_screens/settings_screen.dart';
 import 'package:futsal/screens/notes_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
-
+import 'package:futsal/screens/drawer_screens/backup_screen.dart';
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
@@ -56,13 +57,17 @@ class DashboardScreen extends StatelessWidget {
                   context,
                   icon: Icons.backup,
                   title: 'Backup',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const BackupScreen() ));
+                  },
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.settings,
                   title: 'Settings',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const SettingsScreen() ));
+                  },
                 ),
                 _buildDrawerItem(
                   context,
