@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:futsal/screens/drawer_screens/about_screen.dart';
 import 'package:futsal/screens/drawer_screens/settings_screen.dart';
 import 'package:futsal/screens/notes_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
@@ -74,7 +75,9 @@ class DashboardScreen extends StatelessWidget {
                   context,
                   icon: Icons.info_outline,
                   title: 'About',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const AboutScreen()));
+                  },
                 ),
               ],
             ),
