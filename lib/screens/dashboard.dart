@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:futsal/screens/drawer_screens/about_screen.dart';
 import 'package:futsal/screens/drawer_screens/settings_screen.dart';
 import 'package:futsal/screens/notes_screen.dart';
+import 'package:futsal/screens/tactics.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
@@ -76,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
                   icon: Icons.info_outline,
                   title: 'About',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const AboutScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const AboutScreen() ));
                   },
                 ),
               ],
@@ -154,7 +155,8 @@ class DashboardScreen extends StatelessWidget {
                     title: 'Tactics',
                     icon: Icons.golf_course_rounded,
                     color: Colors.orange.shade500,
-                    onPressed: (){},
+                    onPressed: (){
+                    },
                   ),
                 ],
               ),
@@ -169,7 +171,7 @@ class DashboardScreen extends StatelessWidget {
                     onPressed: () {},
                   ),
                   ActionCard(
-                    title: 'Results',
+                    title: 'Match Results',
                     icon: Icons.edit_note_sharp,
                     color: Colors.green.shade400,
                     onPressed: () {

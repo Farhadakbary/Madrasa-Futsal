@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:futsal/screens/adding_team-player.dart';
+import 'package:futsal/screens/edit_main_team_players.dart';
 import '../database/helper.dart';
 
 class MainTeamPlayersListScreen extends StatefulWidget {
@@ -101,7 +102,13 @@ class _MainTeamPlayersListScreenState
           ),
         ),
         tileColor: Colors.white,
-        trailing: Icon(Icons.more_vert, color: Colors.green.shade700),
+        trailing: IconButton( onPressed: ()async {
+          final result= await Navigator.push(context, MaterialPageRoute(builder: (context)=>
+              EditMainTeamPlayerScreen(player: player)));
+          if(result == true){
+            _loadMainTeamPlayers();
+          }
+        }, icon:const Icon(Icons.more_vert),),
       ),
     );
   }

@@ -152,15 +152,27 @@ class DatabaseHelper {
     }
   }
 
-  Future<int> updateMainTeamPlayer(int id, Map<String, dynamic> player) async {
-    final db = await instance.database;
+  Future<int> updateMainTeamPlayer(Map<String, dynamic> player) async {
+    final db = await database; // دسترسی به دیتابیس
+
+    // به‌روزرسانی رکورد بازیکن
     return await db.update(
-      'main_team_players',
-      player,
-      where: 'id = ?',
-      whereArgs: [id],
+      'main_team_players', // نام جدول
+      {
+        'firstName': player['firstName'],
+        'lastName': player['lastName'],
+        'jerseyNumber': player['jerseyNumber'],
+        'position': player['position'],
+        'contractDuration': player['contractDuration'],
+        'salary': player['salary'],
+        'imagePath': player['imagePath'],
+        'age': player['age'],
+      }, // داده‌های جدید
+      where: 'id = ?', // شرط به‌روزرسانی
+      whereArgs: [player['id']], // آرگومان شرط
     );
   }
+
 
   Future<int> deleteMainTeamPlayer(int id) async {
     final db = await instance.database;

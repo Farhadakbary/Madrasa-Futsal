@@ -16,6 +16,7 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
   void initState() {
     super.initState();
 
+    // انیمیشن برای لوگو
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -108,7 +109,7 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
               child: Column(
                 children: [
                   _buildInfoCard('Developer', 'Farhad Akbari', Icons.person),
-                  _buildInfoCard('Contact', 'farhad.1-akbary@gmail.com', Icons.email),
+                  _buildInfoCard('Contact', 'farhad.10akbary@gmail.com', Icons.email),
                   _buildInfoCard('Website', 'www.futsalmanager.com', Icons.web),
                 ],
               ),

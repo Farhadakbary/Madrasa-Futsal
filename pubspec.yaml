@@ -30,6 +30,8 @@ flutter:
   assets:
     - assets/image/logo.jfif
     - assets/image/team.jpg
+    - assets/image/futslGround.jfif
+    - assets/image/futsal.webp
 #
 #  # مشخص کردن فونت‌های سفارشی
 #  fonts:
