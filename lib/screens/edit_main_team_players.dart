@@ -26,9 +26,10 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
   File? _imageFile;
   String? _selectedPosition;
   final List<String> _positions = [
-    'Forward',
-    'Midfielder',
-    'Defender',
+    'Center Forward',
+    'Left Flank',
+    'Right Flank',
+    'Center Back',
     'Goalkeeper'
   ];
 

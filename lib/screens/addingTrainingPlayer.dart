@@ -24,9 +24,10 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   String? _selectedTime;
 
   final List<String> _positions = [
-    'Forward',
-    'Midfielder',
-    'Defender',
+    'Center Forward',
+    'Left Flank',
+    'Right Flank',
+    'Center Back',
     'Goalkeeper'
   ];
   final List<String> _times = [

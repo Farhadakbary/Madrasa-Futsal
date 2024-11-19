@@ -111,16 +111,28 @@ class DatabaseHelper {
       return [];
     }
   }
-
   Future<int> updatePlayer(FutsalPlayer player) async {
+    // دسترسی به دیتابیس
     final db = await instance.database;
+
+    // چک کردن صحت دیتابیس و بازیکن
+    if (db == null) {
+      throw Exception("Database is not initialized");
+    }
+
+    if (player.id == null) {
+      throw Exception("Player ID is null, unable to update");
+    }
+
     return await db.update(
       'players',
       player.toMap(),
       where: 'id = ?',
       whereArgs: [player.id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
 
   Future<int> deletePlayer(int id) async {
     final db = await instance.database;
@@ -153,11 +165,10 @@ class DatabaseHelper {
   }
 
   Future<int> updateMainTeamPlayer(Map<String, dynamic> player) async {
-    final db = await database; // دسترسی به دیتابیس
+    final db = await database;
 
-    // به‌روزرسانی رکورد بازیکن
     return await db.update(
-      'main_team_players', // نام جدول
+      'main_team_players',
       {
         'firstName': player['firstName'],
         'lastName': player['lastName'],
@@ -167,9 +178,9 @@ class DatabaseHelper {
         'salary': player['salary'],
         'imagePath': player['imagePath'],
         'age': player['age'],
-      }, // داده‌های جدید
-      where: 'id = ?', // شرط به‌روزرسانی
-      whereArgs: [player['id']], // آرگومان شرط
+      },
+      where: 'id = ?',
+      whereArgs: [player['id']],
     );
   }
 
@@ -232,7 +243,6 @@ class DatabaseHelper {
   Future<void> backupDatabase({String? customPath}) async {
     final db = await instance.database;
 
-    // استخراج داده‌های جداول
     final players = await db.query('players');
     final mainTeamPlayers = await db.query('main_team_players');
     final gameNotes = await db.query('game_notes');
@@ -244,12 +254,10 @@ class DatabaseHelper {
     };
     final jsonData = jsonEncode(backupData);
 
-    // تنظیم مسیر ذخیره‌سازی
     final dir = customPath != null
         ? Directory(customPath)
         : await getApplicationDocumentsDirectory();
 
-    // ایجاد دایرکتوری در صورت عدم وجود
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
@@ -261,14 +269,12 @@ class DatabaseHelper {
   Future<void> restoreDatabase({String? customPath}) async {
     final db = await instance.database;
 
-    // تنظیم مسیر خواندن فایل بکاپ
     final dir = customPath != null
         ? Directory(customPath)
         : await getApplicationDocumentsDirectory();
 
     final file = File('${dir.path}/futsal_backup.json');
 
-    // بررسی وجود فایل بکاپ
     if (!file.existsSync()) {
       throw Exception('No backup file found in the specified path!');
     }
