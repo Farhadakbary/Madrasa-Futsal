@@ -112,27 +112,14 @@ class DatabaseHelper {
     }
   }
   Future<int> updatePlayer(FutsalPlayer player) async {
-    // دسترسی به دیتابیس
-    final db = await instance.database;
-
-    // چک کردن صحت دیتابیس و بازیکن
-    if (db == null) {
-      throw Exception("Database is not initialized");
-    }
-
-    if (player.id == null) {
-      throw Exception("Player ID is null, unable to update");
-    }
-
+    final db = await database;
     return await db.update(
       'players',
       player.toMap(),
       where: 'id = ?',
       whereArgs: [player.id],
-      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
 
   Future<int> deletePlayer(int id) async {
     final db = await instance.database;
@@ -152,6 +139,15 @@ class DatabaseHelper {
     final db = await instance.database;
     return await db.insert('main_team_players', player);
   }
+  Future<List<Map<String, dynamic>>> getContractsEndingIn10Days() async {
+    final db = await database;
+    final tenDaysLater = DateTime.now().add(const Duration(days: 10)).toIso8601String().substring(0, 10);
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    return await db.query('main_team_players',
+        where: 'contractEndDate BETWEEN ? AND ?',
+        whereArgs: [today, tenDaysLater]);
+  }
+
 
   Future<List<Map<String, dynamic>>> getAllMainTeamPlayers() async {
     final db = await instance.database;
@@ -193,7 +189,33 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+  Future<List<Map<String, dynamic>>> getPlayersByTime(String time) async {
+    final db = await database;
+    return await db.query('players',
+        where: 'registrationTime = ?', whereArgs: [time]);
+  }
 
+  Future<List<Map<String, dynamic>>> getExpiredContracts() async {
+    final db = await database;
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    return await db.query('main_team_players',
+        where: 'contractEndDate < ?', whereArgs: [today]);
+  }
+
+  Future<List<Map<String, dynamic>>> getContractsEndingInOneYear() async {
+    final db = await database;
+    final oneYearLater = DateTime.now().add(const Duration(days: 365)).toIso8601String().substring(0, 10);
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    return await db.query('main_team_players',
+        where: 'contractEndDate BETWEEN ? AND ?',
+        whereArgs: [today, oneYearLater]);
+  }
+
+  Future<List<Map<String, dynamic>>> getNotReRegisteredPlayers() async {
+    final db = await database;
+    return await db.query('main_team_players',
+        where: 'reRegistrationDate IS NULL');
+  }
   Future<void> deleteAllMainTeamPlayers() async {
     final db = await instance.database;
     await db.delete('main_team_players');

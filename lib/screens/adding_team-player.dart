@@ -26,9 +26,10 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
   String? _selectedPosition;
   String? _registrationDate;
   final List<String> _positions = [
-    'Forward',
-    'Midfielder',
-    'Defender',
+    'Center Forward',
+    'Left Flank',
+    'Right Flank',
+    'Center Back'
     'Goalkeeper'
   ];
 

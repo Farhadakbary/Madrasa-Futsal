@@ -102,13 +102,52 @@ class _MainTeamPlayersListScreenState
           ),
         ),
         tileColor: Colors.white,
-        trailing: IconButton( onPressed: ()async {
-          final result= await Navigator.push(context, MaterialPageRoute(builder: (context)=>
-              EditMainTeamPlayerScreen(player: player)));
-          if(result == true){
-            _loadMainTeamPlayers();
-          }
-        }, icon:const Icon(Icons.more_vert),),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton( onPressed: ()async {
+              final result= await Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                  EditMainTeamPlayerScreen(player: player)));
+              if(result == true){
+                _loadMainTeamPlayers();
+              }
+            }, icon:const Icon(Icons.more_vert),),
+           IconButton(
+              onPressed: () async {
+                // نمایش یک دیالوگ تایید برای حذف
+                final confirmation = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Confirm Delete'),
+                      content: const Text('Are you sure you want to delete this player?'),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancel')
+                        ),
+                        TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Delete')
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                // اگر تایید شد، بازیکن حذف می‌شود
+                if (confirmation == true) {
+                  // حذف بازیکن از دیتابیس
+                  await _dbHelper.deleteMainTeamPlayer(player['id']);
+
+                  // پس از حذف، لیست بازیکنان به‌روزرسانی می‌شود
+                  _loadMainTeamPlayers();
+                }
+              },
+              icon: const Icon(Icons.delete),
+            ),
+          ],
+        ),
       ),
     );
   }

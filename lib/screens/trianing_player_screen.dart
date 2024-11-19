@@ -154,7 +154,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
           radius: 30,
           backgroundImage: player.imagePath != null
               ? FileImage(File(player.imagePath!))
-              : const AssetImage('assets/default_player.png') as ImageProvider,
+              : const AssetImage('assets/image/team.jpg') as ImageProvider,
           backgroundColor: Colors.red.shade100,
         ),
         title: Text(
@@ -173,7 +173,47 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
           ),
         ),
         tileColor: Colors.white,
-        trailing: const Icon(Icons.chevron_right, color: Colors.blue),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton( onPressed: ()async {
+
+            }, icon:const Icon(Icons.more_vert),),
+            IconButton(
+              onPressed: () async {
+                // نمایش یک دیالوگ تایید برای حذف
+                final confirmation = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Confirm Delete'),
+                      content: const Text('Are you sure you want to delete this player?'),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancel')
+                        ),
+                        TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Delete')
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                // اگر تایید شد، بازیکن حذف می‌شود
+                if (confirmation == true) {
+                  // حذف بازیکن از دیتابیس
+                  await _dbHelper.deletePlayer(player.id!);
+
+                  _loadPlayers();
+                }
+              },
+              icon: const Icon(Icons.delete),
+            ),
+          ],
+        ),
       ),
     );
   }

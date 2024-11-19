@@ -21,7 +21,7 @@ class FutsalPlayer {
     this.imagePath,
   });
 
-  // تبدیل یک بازیکن به Map برای ذخیره در دیتابیس
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -36,7 +36,6 @@ class FutsalPlayer {
     };
   }
 
-  // ساخت یک بازیکن از Map که از دیتابیس دریافت شده
   factory FutsalPlayer.fromMap(Map<String, dynamic> map) {
     return FutsalPlayer(
       id: map['id'],

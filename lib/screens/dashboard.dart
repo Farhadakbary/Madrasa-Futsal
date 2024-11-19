@@ -7,6 +7,7 @@ import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
 import 'package:futsal/screens/drawer_screens/backup_screen.dart';
+import 'package:futsal/screens/reports_screen.dart';
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
@@ -172,7 +173,12 @@ class DashboardScreen extends StatelessWidget {
                     title: 'All Reports',
                     icon: Icons.report,
                     color: Colors.blue.shade400,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>  ReportsScreen()));
+                    },
                   ),
                   ActionCard(
                     title: 'Match Results',
