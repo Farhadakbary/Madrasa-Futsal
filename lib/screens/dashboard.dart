@@ -15,7 +15,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Futsal "),
+        title: const Text("Futsal ",style: TextStyle(color: Colors.white,fontSize: 30),),
         centerTitle: true,
         backgroundColor: Colors.red.shade400,
       ),

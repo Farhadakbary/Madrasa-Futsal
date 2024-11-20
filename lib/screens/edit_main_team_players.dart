@@ -38,7 +38,6 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
     super.initState();
     final player = widget.player;
 
-    // Initialize controllers with the player's current data
     _firstNameController = TextEditingController(text: player['firstName']);
     _lastNameController = TextEditingController(text: player['lastName']);
     _jerseyNumberController =
@@ -85,7 +84,7 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
         const SnackBar(content: Text('Player updated successfully!')),
       );
 
-      Navigator.pop(context, true); // Return true to indicate data was updated
+      Navigator.pop(context, true);
     }
   }
 
@@ -104,7 +103,7 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Main Team Player'),
+        title: const Text('Edit Main Team Player',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),
@@ -121,7 +120,7 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+                      color: Colors.green),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -247,7 +246,7 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
                       onPressed: _pickImage,
                       style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Pick Image'),
+                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
                     ),
                   ],
                 ),

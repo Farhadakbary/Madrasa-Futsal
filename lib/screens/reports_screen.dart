@@ -49,7 +49,7 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reports'),
+        title: const Text('Reports',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),

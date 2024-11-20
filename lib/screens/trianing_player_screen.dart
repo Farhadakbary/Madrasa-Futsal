@@ -67,13 +67,13 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Players List'),
+        title: const Text('Players List',style: TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: Colors.blue.shade700,
         actions: [
 
           IconButton(
-            icon: const Icon(Icons.search,color: Colors.black,),
+            icon: const Icon(Icons.search,color: Colors.white,),
             onPressed: () {
               showSearch(
                 context: context,
@@ -90,7 +90,8 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_list,color: Colors.black,),
+            icon: const Icon(Icons.filter_list,color: Colors.white
+              ,),
             onSelected: (value) {
               setState(() {
                 _selectedTime = value;
@@ -178,10 +179,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
           children: [
             IconButton( onPressed: ()async {
 
-            }, icon:const Icon(Icons.more_vert),),
+            }, icon:const Icon(Icons.edit),),
             IconButton(
               onPressed: () async {
-                // نمایش یک دیالوگ تایید برای حذف
+
                 final confirmation = await showDialog<bool>(
                   context: context,
                   builder: (context) {
@@ -202,9 +203,8 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                   },
                 );
 
-                // اگر تایید شد، بازیکن حذف می‌شود
                 if (confirmation == true) {
-                  // حذف بازیکن از دیتابیس
+
                   await _dbHelper.deletePlayer(player.id!);
 
                   _loadPlayers();

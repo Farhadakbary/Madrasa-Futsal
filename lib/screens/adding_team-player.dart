@@ -29,7 +29,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
     'Center Forward',
     'Left Flank',
     'Right Flank',
-    'Center Back'
+    'Center Back',
     'Goalkeeper'
   ];
 
@@ -99,7 +99,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Main Team Player'),
+        title: const Text('Add Main Team Player',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),
@@ -116,7 +116,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+                      color: Colors.green),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -242,7 +242,7 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                       onPressed: _pickImage,
                       style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Pick Image'),
+                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
                     ),
                   ],
                 ),

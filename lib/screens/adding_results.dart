@@ -80,7 +80,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Match Note'),
+        title: const Text('Add Match Note',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),
@@ -156,7 +156,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       onPressed: () => _selectDate(context),
                       style:
                           ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Select Date'),
+                      child: const Text('Select Date',style: TextStyle(color: Colors.white),),
                     ),
                   ],
                 ),

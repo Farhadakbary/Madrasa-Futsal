@@ -37,7 +37,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: const Text('Notes',style: TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),

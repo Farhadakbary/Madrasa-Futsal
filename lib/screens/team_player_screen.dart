@@ -12,8 +12,7 @@ class MainTeamPlayersListScreen extends StatefulWidget {
       _MainTeamPlayersListScreenState();
 }
 
-class _MainTeamPlayersListScreenState
-    extends State<MainTeamPlayersListScreen> {
+class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   List<Map<String, dynamic>> _mainTeamPlayers = [];
 
@@ -29,13 +28,17 @@ class _MainTeamPlayersListScreenState
       _mainTeamPlayers = players;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Team Players'),
+        title: const Text(
+          'Main Team Players',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.green.shade700,
       ),
@@ -43,18 +46,18 @@ class _MainTeamPlayersListScreenState
         padding: const EdgeInsets.all(8.0),
         child: _mainTeamPlayers.isEmpty
             ? const Center(
-          child: Text(
-            'No players in the main team yet.',
-            style: TextStyle(fontSize: 18, color: Colors.blueGrey),
-          ),
-        )
+                child: Text(
+                  'No players in the main team yet.',
+                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+                ),
+              )
             : ListView.builder(
-          itemCount: _mainTeamPlayers.length,
-          itemBuilder: (context, index) {
-            final player = _mainTeamPlayers[index];
-            return _buildPlayerTile(player, size);
-          },
-        ),
+                itemCount: _mainTeamPlayers.length,
+                itemBuilder: (context, index) {
+                  final player = _mainTeamPlayers[index];
+                  return _buildPlayerTile(player, size);
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -105,42 +108,43 @@ class _MainTeamPlayersListScreenState
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton( onPressed: ()async {
-              final result= await Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                  EditMainTeamPlayerScreen(player: player)));
-              if(result == true){
-                _loadMainTeamPlayers();
-              }
-            }, icon:const Icon(Icons.more_vert),),
-           IconButton(
+            IconButton(
               onPressed: () async {
-                // نمایش یک دیالوگ تایید برای حذف
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            EditMainTeamPlayerScreen(player: player)));
+                if (result == true) {
+                  _loadMainTeamPlayers();
+                }
+              },
+              icon: const Icon(Icons.edit),
+            ),
+            IconButton(
+              onPressed: () async {
                 final confirmation = await showDialog<bool>(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
                       title: const Text('Confirm Delete'),
-                      content: const Text('Are you sure you want to delete this player?'),
+                      content: const Text(
+                          'Are you sure you want to delete this player?'),
                       actions: [
                         TextButton(
                             onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel')
-                        ),
+                            child: const Text('Cancel')),
                         TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Delete')
-                        ),
+                            child: const Text('Delete')),
                       ],
                     );
                   },
                 );
 
-                // اگر تایید شد، بازیکن حذف می‌شود
                 if (confirmation == true) {
-                  // حذف بازیکن از دیتابیس
                   await _dbHelper.deleteMainTeamPlayer(player['id']);
 
-                  // پس از حذف، لیست بازیکنان به‌روزرسانی می‌شود
                   _loadMainTeamPlayers();
                 }
               },

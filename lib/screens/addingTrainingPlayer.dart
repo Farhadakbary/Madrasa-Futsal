@@ -97,7 +97,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Futsal Player'),
+        title: const Text('Add Futsal Player',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
