@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:futsal/database/player_modle.dart';
+import 'package:futsal/screens/edit_training_players.dart';
 import '../database/helper.dart';
-import '../database/player_modle.dart';
 import 'addingTrainingPlayer.dart';
 
 class PlayersListScreen extends StatefulWidget {
@@ -40,13 +41,11 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
 
         if (_selectedTime == '10:00') {
           return player.registrationTime == '10:00';
-        }
-        else if (_selectedTime == '12:00') {
+        } else if (_selectedTime == '12:00') {
           return player.registrationTime == '12:00';
         } else if (_selectedTime == '14:00') {
           return player.registrationTime == '14:00';
-        }
-        else if (_selectedTime == '16:00') {
+        } else if (_selectedTime == '16:00') {
           return player.registrationTime == '16:00';
         } else if (_selectedTime == '18:00') {
           return player.registrationTime == '18:00';
@@ -67,13 +66,18 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Players List',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Players List',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.blue.shade700,
         actions: [
-
           IconButton(
-            icon: const Icon(Icons.search,color: Colors.white,),
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {
               showSearch(
                 context: context,
@@ -90,8 +94,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_list,color: Colors.white
-              ,),
+            icon: const Icon(
+              Icons.filter_list,
+              color: Colors.white,
+            ),
             onSelected: (value) {
               setState(() {
                 _selectedTime = value;
@@ -177,34 +183,51 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton( onPressed: ()async {
-
-            }, icon:const Icon(Icons.edit),),
             IconButton(
               onPressed: () async {
+                final updatedPlayer = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        EditFutsalPlayerScreen(player: player),
+                  ),
+                );
 
+                if (updatedPlayer != null) {
+                  setState(() {
+                    final index =
+                        _players.indexWhere((p) => p.id == updatedPlayer.id);
+                    if (index != -1) {
+                      _players[index] = updatedPlayer;
+                      _applyFilters();
+                    }
+                  });
+                }
+              },
+              icon: const Icon(Icons.edit),
+            ),
+            IconButton(
+              onPressed: () async {
                 final confirmation = await showDialog<bool>(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
                       title: const Text('Confirm Delete'),
-                      content: const Text('Are you sure you want to delete this player?'),
+                      content: const Text(
+                          'Are you sure you want to delete this player?'),
                       actions: [
                         TextButton(
                             onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel')
-                        ),
+                            child: const Text('Cancel')),
                         TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Delete')
-                        ),
+                            child: const Text('Delete')),
                       ],
                     );
                   },
                 );
 
                 if (confirmation == true) {
-
                   await _dbHelper.deletePlayer(player.id!);
 
                   _loadPlayers();
