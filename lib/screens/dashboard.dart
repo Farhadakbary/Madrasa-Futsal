@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal/screens/drawer_screens/about_screen.dart';
-import 'package:futsal/screens/drawer_screens/settings_screen.dart';
+import 'package:futsal/screens/drawer_screens/share_screen.dart';
 import 'package:futsal/screens/notes_screen.dart';
 import 'package:futsal/screens/tactics_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
@@ -8,16 +8,31 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:futsal/screens/team_player_screen.dart';
 import 'package:futsal/screens/drawer_screens/backup_screen.dart';
 import 'package:futsal/screens/reports_screen.dart';
+
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  final Function(bool) onThemeChanged;
+  const DashboardScreen({Key? key, required this.onThemeChanged})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Futsal ",style: TextStyle(color: Colors.white,fontSize: 30),),
+        title: const Text(
+          "Futsal ",
+          style: TextStyle(color: Colors.white, fontSize: 30),
+        ),
         centerTitle: true,
         backgroundColor: Colors.red.shade400,
+        actions: [
+          Switch(
+            activeColor: Colors.black,
+            value: Theme.of(context).brightness == Brightness.dark,
+            onChanged: (bool value) {
+              onThemeChanged(value);
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: Stack(
@@ -29,13 +44,14 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 DrawerHeader(
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade700.withOpacity(0.85),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
-                    ),
-                      image:const DecorationImage(image: AssetImage('assets/image/team.jpg'),fit: BoxFit.cover)
-                  ),
+                      color: Colors.blue.shade700.withOpacity(0.85),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      image: const DecorationImage(
+                          image: AssetImage('assets/image/team.jpg'),
+                          fit: BoxFit.cover)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -62,15 +78,21 @@ class DashboardScreen extends StatelessWidget {
                   icon: Icons.backup,
                   title: 'Backup',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const BackupScreen() ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BackupScreen()));
                   },
                 ),
                 _buildDrawerItem(
                   context,
-                  icon: Icons.settings,
-                  title: 'Settings',
+                  icon: Icons.share,
+                  title: 'Share',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const SettingsScreen() ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ShareScreen()));
                   },
                 ),
                 _buildDrawerItem(
@@ -78,7 +100,10 @@ class DashboardScreen extends StatelessWidget {
                   icon: Icons.info_outline,
                   title: 'About',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>const AboutScreen() ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AboutScreen()));
                   },
                 ),
               ],
@@ -138,7 +163,7 @@ class DashboardScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                              const MainTeamPlayersListScreen()));
+                                  const MainTeamPlayersListScreen()));
                     },
                   ),
                   ActionCard(
@@ -156,11 +181,11 @@ class DashboardScreen extends StatelessWidget {
                     title: 'Tactics',
                     icon: Icons.golf_course_rounded,
                     color: Colors.orange.shade500,
-                    onPressed: (){
+                    onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  FutsalField()));
+                              builder: (context) => FutsalField()));
                     },
                   ),
                 ],
@@ -177,7 +202,7 @@ class DashboardScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  ReportsScreen()));
+                              builder: (context) => ReportsScreen()));
                     },
                   ),
                   ActionCard(
@@ -225,22 +250,19 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-
 class ActionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
 
-
-  const ActionCard(
-      {Key? key,
-      required this.title,
-      required this.icon,
-      required this.color,
-      required this.onPressed,
-      })
-      : super(key: key);
+  const ActionCard({
+    Key? key,
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
