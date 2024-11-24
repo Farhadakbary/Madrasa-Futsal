@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:futsal/database/player_modle.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:futsal/database/helper.dart';
+import 'package:intl/intl.dart';  // برای فرمت‌بندی تاریخ
 
 class AddFutsalPlayerScreen extends StatefulWidget {
   const AddFutsalPlayerScreen({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
+  final TextEditingController _registrationDateController = TextEditingController();  // فیلد تاریخ
 
   File? _imageFile;
   String? _selectedPosition;
@@ -30,6 +32,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
     'Center Back',
     'Goalkeeper'
   ];
+
   final List<String> _times = [
     '10:00',
     '12:00',
@@ -41,11 +44,24 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedImage =
-        await picker.pickImage(source: ImageSource.camera);
+    final XFile? pickedImage = await picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _registrationDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
       });
     }
   }
@@ -59,7 +75,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
       final position = _selectedPosition;
       final time = _selectedTime;
       final fee = double.tryParse(_feeController.text) ?? 0.0;
-      final registrationTime = DateTime.now().toString();
+      final registrationDate = _registrationDateController.text;
       final imagePath = _imageFile?.path;
 
       final newPlayer = FutsalPlayer(
@@ -69,7 +85,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
         age: age,
         position: position!,
         fee: fee,
-        registrationTime: registrationTime,
+        registrationTime: time!,
+        registrationDate: registrationDate,  // اضافه کردن تاریخ ثبت‌نام
         imagePath: imagePath,
       );
 
@@ -90,6 +107,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
     _phoneController.dispose();
     _ageController.dispose();
     _feeController.dispose();
+    _registrationDateController.dispose();
     super.dispose();
   }
 
@@ -97,7 +115,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Futsal Player',style: TextStyle(color: Colors.white),),
+        title: const Text('Add Futsal Player', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
@@ -243,7 +261,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                 DropdownButtonFormField<String>(
                   value: _selectedTime,
                   decoration: const InputDecoration(
-                    labelText: 'Time',
+                    labelText: 'Registration Time',
                     labelStyle: TextStyle(color: Colors.blue),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
@@ -269,22 +287,44 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
+                TextFormField(
+                  controller: _registrationDateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Registration Date',
+                    labelStyle: TextStyle(color: Colors.blue),
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode()); // Hide the keyboard
+                    _selectDate(context);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a registration date';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     _imageFile != null
                         ? Image.file(_imageFile!, width: 80, height: 80)
                         : Container(
-                            width: 80,
-                            height: 80,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.person, size: 50),
-                          ),
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.person, size: 50),
+                    ),
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _pickImage,
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      child: const Text('Pick Image', style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -296,8 +336,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                       onPressed: _savePlayer,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                       ),
                       child: const Text(
                         'Save',
@@ -310,8 +349,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                       ),
                       child: const Text(
                         'Cancel',

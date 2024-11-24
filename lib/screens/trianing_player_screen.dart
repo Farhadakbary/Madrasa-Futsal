@@ -39,22 +39,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         final matchesTime =
             _selectedTime == 'All' || player.registrationTime == _selectedTime;
 
-        if (_selectedTime == '10:00') {
-          return player.registrationTime == '10:00';
-        } else if (_selectedTime == '12:00') {
-          return player.registrationTime == '12:00';
-        } else if (_selectedTime == '14:00') {
-          return player.registrationTime == '14:00';
-        } else if (_selectedTime == '16:00') {
-          return player.registrationTime == '16:00';
-        } else if (_selectedTime == '18:00') {
-          return player.registrationTime == '18:00';
-        } else if (_selectedTime == '20:00') {
-          return player.registrationTime == '20:00';
-        }
+        // Check if the registration time matches the selected time
         final matchesSearch = player.firstName
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
+            .toLowerCase()
+            .contains(_searchQuery.toLowerCase()) ||
             player.lastName.toLowerCase().contains(_searchQuery.toLowerCase());
 
         return matchesTime && matchesSearch;
@@ -122,18 +110,18 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         padding: const EdgeInsets.all(8.0),
         child: _filteredPlayers.isEmpty
             ? const Center(
-                child: Text(
-                  'No players found.',
-                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
-                ),
-              )
+          child: Text(
+            'No players found.',
+            style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+          ),
+        )
             : ListView.builder(
-                itemCount: _filteredPlayers.length,
-                itemBuilder: (context, index) {
-                  final player = _filteredPlayers[index];
-                  return _buildPlayerTile(player);
-                },
-              ),
+          itemCount: _filteredPlayers.length,
+          itemBuilder: (context, index) {
+            final player = _filteredPlayers[index];
+            return _buildPlayerTile(player);
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -196,7 +184,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                 if (updatedPlayer != null) {
                   setState(() {
                     final index =
-                        _players.indexWhere((p) => p.id == updatedPlayer.id);
+                    _players.indexWhere((p) => p.id == updatedPlayer.id);
                     if (index != -1) {
                       _players[index] = updatedPlayer;
                       _applyFilters();
@@ -281,8 +269,8 @@ class PlayerSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     final suggestions = players
         .where((player) =>
-            player.firstName.toLowerCase().contains(query.toLowerCase()) ||
-            player.lastName.toLowerCase().contains(query.toLowerCase()))
+    player.firstName.toLowerCase().contains(query.toLowerCase()) ||
+        player.lastName.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(

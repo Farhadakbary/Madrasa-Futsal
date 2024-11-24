@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:futsal/database/helper.dart';
 import 'package:futsal/screens/adding_results.dart';
+import 'package:futsal/screens/edit_note_screen.dart';
 
 class NotesListScreen extends StatefulWidget {
   const NotesListScreen({Key? key}) : super(key: key);
@@ -37,7 +38,10 @@ class _NotesListScreenState extends State<NotesListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Notes',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),
@@ -45,18 +49,18 @@ class _NotesListScreenState extends State<NotesListScreen> {
         padding: const EdgeInsets.all(8.0),
         child: _notes.isEmpty
             ? const Center(
-          child: Text(
-            'No notes added yet.',
-            style: TextStyle(fontSize: 18, color: Colors.blueGrey),
-          ),
-        )
+                child: Text(
+                  'No notes added yet.',
+                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+                ),
+              )
             : ListView.builder(
-          itemCount: _notes.length,
-          itemBuilder: (context, index) {
-            final note = _notes[index];
-            return _buildNoteTile(note, size);
-          },
-        ),
+                itemCount: _notes.length,
+                itemBuilder: (context, index) {
+                  final note = _notes[index];
+                  return _buildNoteTile(note, size);
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
@@ -68,9 +72,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
             ),
           );
           if (newNote != null) {
-            setState(() {
-              _notes.add(newNote); // اضافه کردن نوت جدید به لیست
-            });
+            _loadNotes();
           }
         },
         child: const Icon(Icons.add),
@@ -114,12 +116,25 @@ class _NotesListScreenState extends State<NotesListScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                _showDeleteConfirmationDialog(note['id']); // تأیید حذف
+              icon: const Icon(Icons.edit, color: Colors.blue),
+              onPressed: () async {
+                final updatedNote = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditNoteScreen(note: note),
+                  ),
+                );
+                if (updatedNote != null) {
+                  _loadNotes(); // Refresh the list after editing
+                }
               },
             ),
-            const Icon(Icons.more_vert, color: Colors.green),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                _showDeleteConfirmationDialog(note['id']);
+              },
+            ),
           ],
         ),
       ),

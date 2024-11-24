@@ -19,9 +19,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,  // Increment the version to trigger onUpgrade
       onCreate: (db, version) {
-        db.execute('''
+        db.execute(''' 
           CREATE TABLE players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             firstName TEXT,
@@ -31,11 +31,12 @@ class DatabaseHelper {
             position TEXT,
             fee REAL,
             registrationTime TEXT,
+            registrationDate TEXT,  // New field added
             imagePath TEXT
           )
         ''');
 
-        db.execute('''
+        db.execute(''' 
           CREATE TABLE main_team_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             firstName TEXT,
@@ -50,7 +51,7 @@ class DatabaseHelper {
           )
         ''');
 
-        db.execute('''
+        db.execute(''' 
           CREATE TABLE game_notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             teamName TEXT,
@@ -63,8 +64,13 @@ class DatabaseHelper {
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await db.execute('''
+        if (oldVersion < 4) {  // Upgrade condition for version 4
+          await db.execute(''' 
+            ALTER TABLE players ADD COLUMN registrationDate TEXT;
+          ''');
+        }
+        if (oldVersion < 3) {
+          await db.execute(''' 
             CREATE TABLE main_team_players (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               firstName TEXT,
@@ -79,8 +85,8 @@ class DatabaseHelper {
             )
           ''');
         }
-        if (oldVersion < 3) {
-          await db.execute('''
+        if (oldVersion < 2) {
+          await db.execute(''' 
             CREATE TABLE game_notes (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               teamName TEXT,
@@ -111,6 +117,7 @@ class DatabaseHelper {
       return [];
     }
   }
+
   Future<int> updatePlayer(FutsalPlayer player) async {
     final db = await database;
     return await db.update(
@@ -139,15 +146,6 @@ class DatabaseHelper {
     final db = await instance.database;
     return await db.insert('main_team_players', player);
   }
-  Future<List<Map<String, dynamic>>> getContractsEndingIn10Days() async {
-    final db = await database;
-    final tenDaysLater = DateTime.now().add(const Duration(days: 10)).toIso8601String().substring(0, 10);
-    final today = DateTime.now().toIso8601String().substring(0, 10);
-    return await db.query('main_team_players',
-        where: 'contractEndDate BETWEEN ? AND ?',
-        whereArgs: [today, tenDaysLater]);
-  }
-
 
   Future<List<Map<String, dynamic>>> getAllMainTeamPlayers() async {
     final db = await instance.database;
@@ -174,12 +172,12 @@ class DatabaseHelper {
         'salary': player['salary'],
         'imagePath': player['imagePath'],
         'age': player['age'],
+        'registrationDate': player['registrationDate'],  // Add registrationDate here
       },
       where: 'id = ?',
       whereArgs: [player['id']],
     );
   }
-
 
   Future<int> deleteMainTeamPlayer(int id) async {
     final db = await instance.database;
@@ -189,33 +187,26 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+// reports database codes
+
   Future<List<Map<String, dynamic>>> getPlayersByTime(String time) async {
     final db = await database;
-    return await db.query('players',
-        where: 'registrationTime = ?', whereArgs: [time]);
+    return await db.query(
+      'players',
+      where: 'registrationTime = ?',
+      whereArgs: [time],
+    );
   }
 
-  Future<List<Map<String, dynamic>>> getExpiredContracts() async {
-    final db = await database;
-    final today = DateTime.now().toIso8601String().substring(0, 10);
-    return await db.query('main_team_players',
-        where: 'contractEndDate < ?', whereArgs: [today]);
-  }
-
-  Future<List<Map<String, dynamic>>> getContractsEndingInOneYear() async {
-    final db = await database;
-    final oneYearLater = DateTime.now().add(const Duration(days: 365)).toIso8601String().substring(0, 10);
-    final today = DateTime.now().toIso8601String().substring(0, 10);
-    return await db.query('main_team_players',
-        where: 'contractEndDate BETWEEN ? AND ?',
-        whereArgs: [today, oneYearLater]);
-  }
 
   Future<List<Map<String, dynamic>>> getNotReRegisteredPlayers() async {
     final db = await database;
-    return await db.query('main_team_players',
-        where: 'reRegistrationDate IS NULL');
+    return await db.query(
+      'players',
+      where: 'reRegistrationDate IS NULL',
+    );
   }
+
   Future<void> deleteAllMainTeamPlayers() async {
     final db = await instance.database;
     await db.delete('main_team_players');
@@ -237,13 +228,13 @@ class DatabaseHelper {
     }
   }
 
-  Future<int> updateGameNote(int id, Map<String, dynamic> note) async {
-    final db = await instance.database;
+  Future<int> updateGameNote(Map<String, dynamic> note) async {
+    final db = await database;
     return await db.update(
       'game_notes',
       note,
       where: 'id = ?',
-      whereArgs: [id],
+      whereArgs: [note['id']],
     );
   }
 
@@ -313,12 +304,12 @@ class DatabaseHelper {
         await txn.insert('players', Map<String, dynamic>.from(player));
       }
       for (final player in backupData['main_team_players']) {
-        await txn.insert('main_team_players', Map<String, dynamic>.from(player));
+        await txn.insert(
+            'main_team_players', Map<String, dynamic>.from(player));
       }
       for (final note in backupData['game_notes']) {
         await txn.insert('game_notes', Map<String, dynamic>.from(note));
       }
     });
   }
-
 }

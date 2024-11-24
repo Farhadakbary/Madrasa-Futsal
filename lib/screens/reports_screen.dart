@@ -25,8 +25,7 @@ class ReportsScreen extends StatelessWidget {
                   leading: CircleAvatar(
                     backgroundImage: player['imagePath'] != null
                         ? FileImage(File(player['imagePath']))
-                        : const Icon(Icons.person)
-                    as ImageProvider,
+                        : const AssetImage('assets/image/team.jpg'),
                   ),
                   title: Text('${player['firstName']} ${player['lastName']}'),
                   subtitle: Text('Registration Time: ${player['registrationTime']}'),
@@ -58,20 +57,6 @@ class ReportsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ..._buildTimeBasedCards(context),
-          _buildReportCard(
-            context,
-            title: 'Expired Contracts',
-            icon: Icons.warning,
-            color: Colors.red,
-            fetchFunction: _dbHelper.getExpiredContracts(),
-          ),
-          _buildReportCard(
-            context,
-            title: 'Contracts Ending in 1 Year',
-            icon: Icons.schedule,
-            color: Colors.orange,
-            fetchFunction: _dbHelper.getContractsEndingInOneYear(),
-          ),
         ],
       ),
     );

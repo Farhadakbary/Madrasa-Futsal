@@ -1,13 +1,15 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:futsal/screens/drawer_screens/about_screen.dart';
+import 'package:futsal/screens/drawer_screens/backup_screen.dart';
 import 'package:futsal/screens/drawer_screens/share_screen.dart';
 import 'package:futsal/screens/notes_screen.dart';
+import 'package:futsal/screens/reports_screen.dart';
 import 'package:futsal/screens/tactics_screen.dart';
+import 'package:futsal/screens/team_player_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:futsal/screens/team_player_screen.dart';
-import 'package:futsal/screens/drawer_screens/backup_screen.dart';
-import 'package:futsal/screens/reports_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   final Function(bool) onThemeChanged;
@@ -174,7 +176,8 @@ class DashboardScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const PlayersListScreen()));
+                              builder: (context) =>const PlayersListScreen()
+                          ),);
                     },
                   ),
                   ActionCard(
