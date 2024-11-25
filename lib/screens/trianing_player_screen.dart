@@ -39,6 +39,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         final matchesTime =
             _selectedTime == 'All' || player.registrationTime == _selectedTime;
 
+<<<<<<< HEAD
+=======
+        // Check if the registration time matches the selected time
+>>>>>>> 1f6e833c8d246a1af6d1993157d240e9ef1b9c25
         final matchesSearch = player.firstName
             .toLowerCase()
             .contains(_searchQuery.toLowerCase()) ||
@@ -159,6 +163,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
             color: Colors.blue,
           ),
         ),
+<<<<<<< HEAD
         subtitle: Column(
           children: [
             Text(
@@ -183,6 +188,14 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
               ),
             ),
           ],
+=======
+        subtitle: Text(
+          'Registered on: ${player.registrationTime}',
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black54,
+          ),
+>>>>>>> 1f6e833c8d246a1af6d1993157d240e9ef1b9c25
         ),
         tileColor: Colors.white,
         trailing: Row(
