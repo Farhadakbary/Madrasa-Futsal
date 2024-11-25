@@ -1,0 +1,47 @@
+name: futsal
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^1.1.2
+  sqflite: ^2.3.3+1
+  google_fonts: ^6.2.1
+  intl: ^0.20.0
+  font_awesome_flutter: ^10.8.0
+  cupertino_icons: ^1.0.6
+  share_plus: ^6.0.0
+  provider: ^6.1.2
+  shared_preferences: ^2.3.3
+  path_provider: ^2.1.5
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+#  # مشخص کردن منابع تصویری
+  assets:
+    - assets/image/logo.jfif
+    - assets/image/team.jpg
+    - assets/image/futslGround.jfif
+    - assets/image/futsal.webp
+    - assets/image/futsal.jpg
+    - assets/image/futsal.jpg
+
+#
+#  # مشخص کردن فونت‌های سفارشی
+#  fonts:
+#    - family: Roboto
+#      fonts:
+#        - asset: fonts/Roboto-Regular.ttf
+#        - asset: fonts/Roboto-Bold.ttf
+#          weight: 700
