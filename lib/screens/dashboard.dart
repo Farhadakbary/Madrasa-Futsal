@@ -1,5 +1,4 @@
-
-import 'package:flutter/cupertino.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:futsal/screens/drawer_screens/about_screen.dart';
 import 'package:futsal/screens/drawer_screens/backup_screen.dart';
@@ -11,10 +10,36 @@ import 'package:futsal/screens/team_player_screen.dart';
 import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DashboardScreen extends StatelessWidget {
+import '../database/helper.dart';
+
+class DashboardScreen extends StatefulWidget {
   final Function(bool) onThemeChanged;
-  const DashboardScreen({Key? key, required this.onThemeChanged})
-      : super(key: key);
+
+  DashboardScreen({Key? key, required this.onThemeChanged}) : super(key: key);
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  late Future<List<int>> _chartData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChartData();
+  }
+
+  void _loadChartData() {
+    _chartData = Future.wait([
+      _dbHelper.getPlayersWithExpiredRegistration().then((list) => list.length),
+      _dbHelper
+          .getPlayersWithExpiringRegistration()
+          .then((list) => list.length),
+      _dbHelper.getPlayersAfterThirtyDays().then((list) => list.length),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +56,7 @@ class DashboardScreen extends StatelessWidget {
             activeColor: Colors.black,
             value: Theme.of(context).brightness == Brightness.dark,
             onChanged: (bool value) {
-              onThemeChanged(value);
+              widget.onThemeChanged(value);
             },
           ),
         ],
@@ -174,10 +199,10 @@ class DashboardScreen extends StatelessWidget {
                     color: Colors.blue.shade500,
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>const PlayersListScreen()
-                          ),);
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PlayersListScreen()),
+                      );
                     },
                   ),
                   ActionCard(
@@ -236,13 +261,58 @@ class DashboardScreen extends StatelessWidget {
                   color: Colors.blue.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(
-                  child: Text(
-                    'Chart/Graph will be here',
-                    style:
-                        GoogleFonts.roboto(fontSize: 18, color: Colors.black),
-                  ),
-                ),
+                child: FutureBuilder<List<int>>(
+                    future: _chartData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError || !snapshot.hasData) {
+                        return const Center(
+                            child: Text('Error loading chart data.'));
+                      } else {
+                        final data = snapshot.data!;
+                        return BarChart(
+                          BarChartData(
+                            barGroups: _buildBarGroups(data),
+                            titlesData: FlTitlesData(
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, _) {
+                                    switch (value.toInt()) {
+                                      case 0:
+                                        return const Text('Registered',
+                                            style: TextStyle(fontSize: 8));
+                                      case 1:
+                                        return const Text('In 10 Days',
+                                            style: TextStyle(fontSize: 8));
+                                      case 2:
+                                        return const Text('Expired(+30)',
+                                            style: TextStyle(fontSize: 8));
+                                      default:
+                                        return const Text('');
+                                    }
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  interval: 2,
+                                  reservedSize: 28,
+                                  getTitlesWidget: (value, _) => Text(
+                                    value.toInt().toString(),
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            borderData: FlBorderData(show: false),
+                            gridData: const FlGridData(show: true),
+                          ),
+                        );
+                      }
+                    }),
               ),
               const SizedBox(height: 30),
             ],
@@ -385,4 +455,18 @@ Widget _buildDrawerItem(
     ),
     onTap: onTap,
   );
+}
+
+List<BarChartGroupData> _buildBarGroups(List<int> playerCounts) {
+  return List.generate(playerCounts.length, (index) {
+    return BarChartGroupData(
+      x: index,
+      barRods: [
+        BarChartRodData(
+          toY: playerCounts[index].toDouble(),
+          color: Colors.blueAccent,
+        ),
+      ],
+    );
+  });
 }

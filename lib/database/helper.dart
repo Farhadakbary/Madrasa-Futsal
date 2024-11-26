@@ -198,13 +198,79 @@ class DatabaseHelper {
     );
   }
 
+  Future<List<Map<String, dynamic>>> getPlayersWithExpiredRegistration() async {
+    final db = await instance.database;
+    final now = DateTime.now();
 
-  Future<List<Map<String, dynamic>>> getNotReRegisteredPlayers() async {
-    final db = await database;
-    return await db.query(
+    final result = await db.query(
       'players',
-      where: 'reRegistrationDate IS NULL',
+      where: 'registrationDate < ?',
+      whereArgs: [now.toIso8601String()],
     );
+
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> getPlayersWithExpiringRegistration() async {
+    final db = await instance.database;
+    final now = DateTime.now();
+
+    // تاریخ 20 روز پیش
+    final twentyDaysAgo = now.subtract(const Duration(days: 20));
+
+    // تاریخ 30 روز پیش
+    final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+
+    // جستجوی بازیکنان که تاریخ ثبت‌نامشان بین 20 تا 30 روز پیش باشد
+    final result = await db.query(
+      'players',
+      where: 'registrationDate BETWEEN ? AND ?',
+      whereArgs: [
+        thirtyDaysAgo.toIso8601String(),
+        twentyDaysAgo.toIso8601String(),
+      ],
+    );
+
+    return result;
+  }
+
+  Future<List<int>> _getPlayerCountsByTime() async {
+    final db = await DatabaseHelper.instance.database;
+
+    const times = ['10:00', '12:00', '14:00', '16:00', '18:00'];
+
+    List<int> counts = [];
+
+    for (String time in times) {
+
+      final result = await db.rawQuery(
+        '''
+      SELECT COUNT(*) as count
+      FROM players
+      WHERE strftime('%H:%M', registrationTime) = ?
+      ''',
+        [time],
+      );
+
+      counts.add(result.first['count'] as int);
+    }
+
+    return counts;
+  }
+
+
+  Future<List<Map<String, dynamic>>> getPlayersAfterThirtyDays() async {
+    final db = await instance.database;
+    final now = DateTime.now();
+    final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+
+    final result = await db.query(
+      'players',
+      where: 'registrationDate < ?',
+      whereArgs: [thirtyDaysAgo.toIso8601String()],
+    );
+
+    return result;
   }
 
   Future<void> deleteAllMainTeamPlayers() async {

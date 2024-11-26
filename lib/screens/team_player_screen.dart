@@ -69,13 +69,8 @@ class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
           );
           _loadMainTeamPlayers();
         },
-<<<<<<< HEAD
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-=======
         child: const Icon(Icons.add),
         backgroundColor: Colors.green,
->>>>>>> 1f6e833c8d246a1af6d1993157d240e9ef1b9c25
       ),
     );
   }
@@ -91,11 +86,9 @@ class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
           radius: 30,
           backgroundImage: player['imagePath'] != null
               ? FileImage(File(player['imagePath']))
-<<<<<<< HEAD
+
               : const AssetImage('assets/image/team.jpg') as ImageProvider,
-=======
-              : const AssetImage('assets/default_player.png') as ImageProvider,
->>>>>>> 1f6e833c8d246a1af6d1993157d240e9ef1b9c25
+
           backgroundColor: Colors.green.shade100,
         ),
         title: Text(

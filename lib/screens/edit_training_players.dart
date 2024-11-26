@@ -23,7 +23,8 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
-  final TextEditingController _registrationDateController = TextEditingController();
+  final TextEditingController _registrationDateController =
+      TextEditingController();
 
   File? _imageFile;
   String? _selectedPosition;
@@ -69,7 +70,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage =
-    await picker.pickImage(source: ImageSource.camera);
+        await picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
@@ -131,7 +132,10 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Futsal Player',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Edit Futsal Player',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.blue,
       ),
       body: Container(
@@ -169,7 +173,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) =>
-                  value == null || value.isEmpty ? 'Enter last name' : null,
+                      value == null || value.isEmpty ? 'Enter last name' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -192,7 +196,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) =>
-                  value == null || value.isEmpty ? 'Enter age' : null,
+                      value == null || value.isEmpty ? 'Enter age' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -203,7 +207,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) =>
-                  value == null || value.isEmpty ? 'Enter fee' : null,
+                      value == null || value.isEmpty ? 'Enter fee' : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -256,7 +260,8 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode()); // Hide the keyboard
+                    FocusScope.of(context)
+                        .requestFocus(FocusNode()); // Hide the keyboard
                     _selectDate(context);
                   },
                   validator: (value) {
@@ -272,10 +277,10 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                     _imageFile != null
                         ? Image.file(_imageFile!, width: 80, height: 80)
                         : const CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.person, size: 40),
-                    ),
+                            radius: 40,
+                            backgroundColor: Colors.grey,
+                            child: Icon(Icons.person, size: 40),
+                          ),
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _pickImage,
@@ -305,7 +310,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                const PlayersListScreen()));
+                                    const PlayersListScreen()));
                       },
                       child: const Text('Cancel'),
                     ),

@@ -5,9 +5,10 @@ import 'dart:io';
 class ReportsScreen extends StatelessWidget {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  Future<void> _showPlayersDialog(
-      BuildContext context, String title, Future<List<Map<String, dynamic>>> fetchFunction) async {
+  Future<void> _showPlayersDialog(BuildContext context, String title,
+      Future<List<Map<String, dynamic>>> fetchFunction) async {
     final players = await fetchFunction;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -18,20 +19,25 @@ class ReportsScreen extends StatelessWidget {
             child: players.isEmpty
                 ? const Text('No players found.')
                 : ListView.builder(
-              itemCount: players.length,
-              itemBuilder: (context, index) {
-                final player = players[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: player['imagePath'] != null
-                        ? FileImage(File(player['imagePath']))
-                        : const AssetImage('assets/image/team.jpg'),
+                    itemCount: players.length,
+                    itemBuilder: (context, index) {
+                      final player = players[index];
+                      final registrationDate =
+                          DateTime.parse(player['registrationDate']);
+                      final daysPassed =
+                          DateTime.now().difference(registrationDate).inDays;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: player['imagePath'] != null
+                              ? FileImage(File(player['imagePath']))
+                              : const AssetImage('assets/image/team.jpg'),
+                        ),
+                        title: Text(
+                            '${player['firstName']} ${player['lastName']}'),
+                        subtitle: Text('Days since registration: $daysPassed'),
+                      );
+                    },
                   ),
-                  title: Text('${player['firstName']} ${player['lastName']}'),
-                  subtitle: Text('Registration Time: ${player['registrationTime']}'),
-                );
-              },
-            ),
           ),
           actions: [
             TextButton(
@@ -48,7 +54,10 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reports',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Reports',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
@@ -57,6 +66,25 @@ class ReportsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ..._buildTimeBasedCards(context),
+          _buildReportCard(
+            context,
+            title: 'Days of Registrations',
+            icon: Icons.error,
+            color: Colors.red,
+            fetchFunction: _dbHelper.getPlayersWithExpiredRegistration(),
+          ),
+          _buildReportCard(
+            context,
+            title: 'Upcoming Expirations (10 Days)',
+            icon: Icons.warning,
+            color: Colors.orange,
+            fetchFunction: _dbHelper.getPlayersWithExpiringRegistration(),
+          ),
+          _buildReportCard(context,
+              title: "Expired",
+              icon: Icons.pin_end_sharp,
+              color: Colors.red,
+              fetchFunction: _dbHelper.getPlayersAfterThirtyDays())
         ],
       ),
     );
@@ -77,9 +105,9 @@ class ReportsScreen extends StatelessWidget {
 
   Widget _buildReportCard(BuildContext context,
       {required String title,
-        required IconData icon,
-        required Color color,
-        required Future<List<Map<String, dynamic>>> fetchFunction}) {
+      required IconData icon,
+      required Color color,
+      required Future<List<Map<String, dynamic>>> fetchFunction}) {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -94,7 +122,8 @@ class ReportsScreen extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold, color: color),
             ),
           ],
         ),
