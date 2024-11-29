@@ -126,6 +126,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
                 );
                 if (updatedNote != null) {
                   _loadNotes();
+                  _loadNotes(); // Refresh the list after editing
                 }
               },
             ),

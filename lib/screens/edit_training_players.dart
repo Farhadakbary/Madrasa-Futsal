@@ -228,7 +228,6 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
                       : _positions.first,
                   decoration: const InputDecoration(
                     labelText: 'Position',
-                    labelStyle: TextStyle(color: Colors.blue),
                     border: OutlineInputBorder(),
                   ),
                   items: _positions.map((position) {

@@ -29,7 +29,8 @@ class ReportsScreen extends StatelessWidget {
                   final player = players[index];
                   final registrationDate =
                   DateTime.parse(player['registrationDate']);
-                  final daysPassed = DateTime.now()
+                  final daysPassed = DateTime
+                      .now()
                       .difference(registrationDate)
                       .inDays;
                   return ListTile(
@@ -106,6 +107,7 @@ class ReportsScreen extends StatelessWidget {
       ),
     );
   }
+
 
   // ساخت کارت‌های زمانی
   List<Widget> _buildTimeBasedCards(BuildContext context) {

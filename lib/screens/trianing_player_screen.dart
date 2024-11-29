@@ -24,6 +24,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
     super.initState();
     _loadPlayers();
   }
+
   Future<void> _loadPlayers() async {
     try {
       final players = await DatabaseHelper.instance.getAllPlayers();

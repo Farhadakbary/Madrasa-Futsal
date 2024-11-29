@@ -127,6 +127,7 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
                   controller: _firstNameController,
                   decoration: const InputDecoration(
                     labelText: 'First Name',
+
                     labelStyle: TextStyle(color: Colors.green),
                     border: OutlineInputBorder(),
                   ),
@@ -173,7 +174,6 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
                   value: _selectedPosition,
                   decoration: const InputDecoration(
                     labelText: 'Position',
-                    labelStyle: TextStyle(color: Colors.green),
                     border: OutlineInputBorder(),
                   ),
                   items: _positions.map((position) {
@@ -268,10 +268,12 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
                             horizontal: 32, vertical: 12),
                       ),
                       child: const Text('Save Changes',style: TextStyle(color: Colors.black)),
+
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text('Cancel',style: TextStyle(color: Colors.black)),
+
                     ),
                   ],
                 ),

@@ -91,7 +91,7 @@ class DatabaseHelper {
   Future<int> insertPlayer(Map<String, dynamic> player) async {
     final db = await database;
     return await db.insert('Train_players', player);
-  }
+}
 
   Future<List<FutsalPlayer>> getAllPlayers() async {
     final db = await instance.database;
@@ -103,7 +103,7 @@ class DatabaseHelper {
     final db = await database;
     return await db.update(
       'Train_players',
-      player.toMap(),
+      player.toMap() ,
       where: 'id = ?',
       whereArgs: [player.id],
     );
@@ -128,7 +128,6 @@ class DatabaseHelper {
       whereArgs: [now],
     );
   }
-
 
   Future<int> insertMainTeamPlayer(Map<String, dynamic> player) async {
     final db = await instance.database;
@@ -160,7 +159,8 @@ class DatabaseHelper {
         'salary': player['salary'],
         'imagePath': player['imagePath'],
         'age': player['age'],
-        'registrationDate': player['registrationDate'],  // Add registrationDate here
+        'registrationDate': player['registrationDate'],
+        // Add registrationDate here
       },
       where: 'id = ?',
       whereArgs: [player['id']],
@@ -175,6 +175,7 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
 // reports database codes
 
   Future<List<Map<String, dynamic>>> getPlayersByTime(String time) async {
@@ -191,7 +192,8 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getPlayersWithExpiringRegistration() async {
+  Future<
+      List<Map<String, dynamic>>> getPlayersWithExpiringRegistration() async {
     try {
       final db = await database;
       final now = DateTime.now();
@@ -206,6 +208,7 @@ class DatabaseHelper {
           twentyDaysAgo.toIso8601String(),
         ],
       );
+
 
       return result;
     } catch (e) {
@@ -260,6 +263,7 @@ class DatabaseHelper {
       return [];
     }
   }
+
   Future<void> deleteAllMainTeamPlayers() async {
     final db = await instance.database;
     await db.delete('main_team_players');
@@ -355,13 +359,13 @@ class DatabaseHelper {
 
       for (final player in backupData['Train_players']) {
         await txn.insert('Train_players', Map<String, dynamic>.from(player));
-      }
-      for (final player in backupData['main_team_players']) {
-        await txn.insert(
-            'main_team_players', Map<String, dynamic>.from(player));
-      }
-      for (final note in backupData['game_notes']) {
-        await txn.insert('game_notes', Map<String, dynamic>.from(note));
+        for (final player in backupData['main_team_players']) {
+          await txn.insert(
+              'main_team_players', Map<String, dynamic>.from(player));
+        }
+        for (final note in backupData['game_notes']) {
+          await txn.insert('game_notes', Map<String, dynamic>.from(note));
+        }
       }
     });
   }
