@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # futsal
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# Madrasa-Futsal
+This is a management app for saving players 
+>>>>>>> 2b53a86dea0ef2a2ee4ff3abc2fc1eda5346d859
