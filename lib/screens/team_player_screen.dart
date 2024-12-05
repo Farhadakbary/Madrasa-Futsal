@@ -84,12 +84,21 @@ class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
         contentPadding: const EdgeInsets.all(10),
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: player['imagePath'] != null
-              ? FileImage(File(player['imagePath']))
-
-              : const AssetImage('assets/image/team.jpg') as ImageProvider,
-
           backgroundColor: Colors.green.shade100,
+          child: player['imagePath'] != null
+              ? ClipOval(
+            child: Image.file(
+              File(player['imagePath']),
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
+          )
+              : const Icon(
+            Icons.person,
+            size: 40,
+            color: Colors.black,
+          ),
         ),
         title: Text(
           '${player['firstName']} ${player['lastName']}',

@@ -309,7 +309,22 @@ class DatabaseHelper {
     await db.delete('game_notes');
   }
 
+
   //Backup codes
+
+  Future<void> clearDatabase() async {
+    final db = await instance.database;
+
+    await db.transaction((txn) async {
+      await txn.delete('Train_players');
+      await txn.delete('main_team_players');
+      await txn.delete('game_notes');
+    });
+
+    print("تمام داده‌های دیتابیس پاک شد.");
+  }
+
+
   Future<void> backupDatabase({String? customPath}) async {
     final db = await instance.database;
 

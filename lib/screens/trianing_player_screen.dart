@@ -44,8 +44,8 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
             _selectedTime == 'All' || player.registrationTime == _selectedTime;
 
         final matchesSearch = player.firstName
-            .toLowerCase()
-            .contains(_searchQuery.toLowerCase()) ||
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
             player.lastName.toLowerCase().contains(_searchQuery.toLowerCase());
 
         return matchesTime && matchesSearch;
@@ -64,25 +64,30 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         centerTitle: true,
         backgroundColor: Colors.blue.shade700,
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: PlayerSearchDelegate(
-                  players: _players,
-                  onSearchSelected: (query) {
-                    setState(() {
-                      _searchQuery = query;
-                      _applyFilters();
-                    });
-                  },
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: SizedBox(
+              width: 200,
+              child: TextField(
+                onChanged: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                    _applyFilters();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(color: Colors.white),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  border: InputBorder.none,
+                  filled: true,
+                  fillColor: Colors.blue.shade600,
                 ),
-              );
-            },
+              ),
+            ),
           ),
           PopupMenuButton<String>(
             icon: const Icon(
@@ -113,18 +118,18 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         padding: const EdgeInsets.all(8.0),
         child: _filteredPlayers.isEmpty
             ? const Center(
-          child: Text(
-            'No players found.',
-            style: TextStyle(fontSize: 18, color: Colors.blueGrey),
-          ),
-        )
+                child: Text(
+                  'No players found.',
+                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+                ),
+              )
             : ListView.builder(
-          itemCount: _filteredPlayers.length,
-          itemBuilder: (context, index) {
-            final player = _filteredPlayers[index];
-            return _buildPlayerTile(player);
-          },
-        ),
+                itemCount: _filteredPlayers.length,
+                itemBuilder: (context, index) {
+                  final player = _filteredPlayers[index];
+                  return _buildPlayerTile(player);
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -136,7 +141,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
           _loadPlayers();
         },
         backgroundColor: Colors.blue,
-        child: const Icon(Icons.add,color: Colors.white,),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -150,10 +158,21 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
         contentPadding: const EdgeInsets.all(10),
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: player.imagePath != null
-              ? FileImage(File(player.imagePath!))
-              : const AssetImage('assets/image/team.jpg') as ImageProvider,
-          backgroundColor: Colors.red.shade100,
+          backgroundColor: Colors.blue.shade100,
+          child: player.imagePath != null
+              ? ClipOval(
+                  child: Image.file(
+                    File(player.imagePath!),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Icon(
+                  Icons.person,
+                  size: 40,
+                  color: Colors.black,
+                ),
         ),
         title: Text(
           '${player.firstName} ${player.lastName}',
@@ -205,7 +224,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                 if (updatedPlayer != null) {
                   setState(() {
                     final index =
-                    _players.indexWhere((p) => p.id == updatedPlayer.id);
+                        _players.indexWhere((p) => p.id == updatedPlayer.id);
                     if (index != -1) {
                       _players[index] = updatedPlayer;
                       _applyFilters();
@@ -213,7 +232,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                   });
                 }
               },
-              icon: const Icon(Icons.edit,color: Colors.blue,),
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.blue,
+              ),
             ),
             IconButton(
               onPressed: () async {
@@ -230,7 +252,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                             child: const Text('Cancel')),
                         TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Delete',style: TextStyle(color: Colors.red),)),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            )),
                       ],
                     );
                   },
@@ -242,7 +267,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                   _loadPlayers();
                 }
               },
-              icon: const Icon(Icons.delete,color: Colors.red,),
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
             ),
           ],
         ),
@@ -290,8 +318,8 @@ class PlayerSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     final suggestions = players
         .where((player) =>
-    player.firstName.toLowerCase().contains(query.toLowerCase()) ||
-        player.lastName.toLowerCase().contains(query.toLowerCase()))
+            player.firstName.toLowerCase().contains(query.toLowerCase()) ||
+            player.lastName.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(

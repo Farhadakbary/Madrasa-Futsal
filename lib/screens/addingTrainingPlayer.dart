@@ -5,9 +5,11 @@ import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:futsal/database/helper.dart';
 import 'package:intl/intl.dart';
-class AddFutsalPlayerScreen extends StatefulWidget {
 
-  const AddFutsalPlayerScreen({Key? key,}) : super(key: key);
+class AddFutsalPlayerScreen extends StatefulWidget {
+  const AddFutsalPlayerScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _AddFutsalPlayerScreenState createState() => _AddFutsalPlayerScreenState();
@@ -20,7 +22,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
-  final TextEditingController _registrationDateController = TextEditingController();
+  final TextEditingController _registrationDateController =
+      TextEditingController();
 
   File? _imageFile;
   String? _selectedPosition;
@@ -45,7 +48,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedImage = await picker.pickImage(source: ImageSource.camera);
+    final XFile? pickedImage =
+        await picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
@@ -62,10 +66,12 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
     );
     if (pickedDate != null) {
       setState(() {
-        _registrationDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+        _registrationDateController.text =
+            DateFormat('yyyy-MM-dd').format(pickedDate);
       });
     }
   }
+
   void _savePlayer() async {
     if (_formKey.currentState!.validate()) {
       final firstName = _firstNameController.text;
@@ -96,7 +102,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
       } catch (e) {
         print('Error saving player: $e');
       }
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>const PlayersListScreen()));
+      Navigator.pop(context,
+          MaterialPageRoute(builder: (context) => const PlayersListScreen()));
     }
   }
 
@@ -115,7 +122,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Futsal Player', style: TextStyle(color: Colors.white)),
+        title: const Text('Add Futsal Player',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
@@ -187,6 +195,11 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the phone number';
                     }
+                    final regex =
+                        RegExp(r'^(07[0-9]{8}|07[0-9]-[0-9]{3}-[0-9]{4})$');
+                    if (!regex.hasMatch(value)) {
+                      return 'Invalid Afghan phone number format';
+                    }
                     return null;
                   },
                 ),
@@ -205,6 +218,10 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the age';
+                    }
+                    final age = int.tryParse(value);
+                    if (age == null || age < 7 || age > 60) {
+                      return 'Age must be between 7 and 60';
                     }
                     return null;
                   },
@@ -225,12 +242,17 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the fee';
                     }
+                    final fee = int.tryParse(value);
+                    if (fee == null || fee > 2000) {
+                      return 'Fee must not exceed 2000';
+                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedPosition,
+                  style: const TextStyle(color: Colors.blue),
                   decoration: const InputDecoration(
                     labelText: 'Position',
                     labelStyle: TextStyle(color: Colors.blue),
@@ -260,6 +282,7 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedTime,
+                  style: const TextStyle(color: Colors.blue),
                   decoration: const InputDecoration(
                     labelText: 'Registration Time',
                     labelStyle: TextStyle(color: Colors.blue),
@@ -299,7 +322,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode()); // Hide the keyboard
+                    FocusScope.of(context)
+                        .requestFocus(FocusNode()); // Hide the keyboard
                     _selectDate(context);
                   },
                   validator: (value) {
@@ -315,16 +339,18 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                     _imageFile != null
                         ? Image.file(_imageFile!, width: 80, height: 80)
                         : Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.person, size: 50),
-                    ),
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.person, size: 50),
+                          ),
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _pickImage,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                      child: const Text('Pick Image', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
+                      child: const Text('Pick Image',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -336,7 +362,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                       onPressed: _savePlayer,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 12),
                       ),
                       child: const Text(
                         'Save',
@@ -349,7 +376,8 @@ class _AddFutsalPlayerScreenState extends State<AddFutsalPlayerScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 12),
                       ),
                       child: const Text(
                         'Cancel',

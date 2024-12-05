@@ -24,6 +24,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   late ValueNotifier<List<int>> _chartDataNotifier;
+  String _selectedLanguage = "فارسی";
 
   @override
   void initState() {
@@ -33,9 +34,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _loadChartData() async {
-    final expiredPlayersCount = await _dbHelper.getPlayersWithExpiredRegistration();
-    final expiringPlayersCount = await _dbHelper.getPlayersWithExpiringRegistration();
-    final playersAfterThirtyDaysCount = await _dbHelper.getPlayersAfterThirtyDays();
+    final expiredPlayersCount =
+        await _dbHelper.getPlayersWithExpiredRegistration();
+    final expiringPlayersCount =
+        await _dbHelper.getPlayersWithExpiringRegistration();
+    final playersAfterThirtyDaysCount =
+        await _dbHelper.getPlayersAfterThirtyDays();
 
     _chartDataNotifier.value = [
       expiredPlayersCount.length,
@@ -46,10 +50,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Futsal ",
+          "Futsal",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
         centerTitle: true,
@@ -57,89 +63,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           Switch(
             activeColor: Colors.black,
-            value: Theme.of(context).brightness == Brightness.dark,
+            value: isDarkMode,
             onChanged: (bool value) {
               widget.onThemeChanged(value);
             },
           ),
         ],
       ),
-      drawer: Drawer(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: AnimatedBackground(),
-            ),
-            ListView(
-              children: [
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                      color: Colors.blue.shade700.withOpacity(0.85),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                      image: const DecorationImage(
-                          image: AssetImage('assets/image/team.jpg'),
-                          fit: BoxFit.cover)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircleAvatar(
-                        radius: 45,
-                        backgroundImage: AssetImage('assets/image/logo.jfif'),
-                        backgroundColor: Colors.white,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'FC Barcelona',
-                        style: GoogleFonts.roboto(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _buildDrawerItem(
-                  context,
-                  icon: Icons.backup,
-                  title: 'Backup',
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const BackupScreen()));
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  icon: Icons.share,
-                  title: 'Share',
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ShareScreen()));
-                  },
-                ),
-                _buildDrawerItem(
-                  context,
-                  icon: Icons.info_outline,
-                  title: 'About',
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AboutScreen()));
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+      drawer: CustomDrawer(
+        isDarkMode: true,
+        onLanguageChanged: (String lang) {},
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -147,7 +80,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 decoration: BoxDecoration(
@@ -159,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Center(
                       child: Padding(
-                        padding:const EdgeInsets.fromLTRB(30,10, 30, 10),
+                        padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
                         child: Text(
                           'Welcome Back',
                           style: GoogleFonts.roboto(
@@ -195,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                              const MainTeamPlayersListScreen()));
+                                  const MainTeamPlayersListScreen()));
                     },
                   ),
                   ActionCard(
@@ -342,19 +274,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ]),
     ];
   }
-
-  Widget _buildDrawerItem(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required VoidCallback onTap,
-      }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(title, style: const TextStyle(color: Colors.white)),
-      onTap: onTap,
-    );
-  }
 }
 
 class ActionCard extends StatelessWidget {
@@ -364,12 +283,12 @@ class ActionCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   const ActionCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.color,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -411,12 +330,12 @@ class SecondActionCards extends StatelessWidget {
   final VoidCallback onPressed;
 
   const SecondActionCards({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.color,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -452,6 +371,8 @@ class SecondActionCards extends StatelessWidget {
 }
 
 class AnimatedBackground extends StatefulWidget {
+  const AnimatedBackground({super.key});
+
   @override
   _AnimatedBackgroundState createState() => _AnimatedBackgroundState();
 }
@@ -516,4 +437,150 @@ class BackgroundPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
+class CustomDrawer extends StatelessWidget {
+  final bool isDarkMode;
+  final Function(String) onLanguageChanged;
 
+  const CustomDrawer({
+    super.key,
+    required this.isDarkMode,
+    required this.onLanguageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final drawerBackground = isDarkMode ? Colors.black : Colors.white;
+
+    return Drawer(
+      child: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.3,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/image/team.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/image/logo.jfif'),
+                    backgroundColor: Colors.white,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'FC Barcelona',
+                    style: GoogleFonts.roboto(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          isDarkMode ? Colors.white : Colors.blue[100]!,
+                          isDarkMode ? Colors.orange : Colors.white,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ),
+                ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.language, color: Colors.black),
+                      title: const Text(
+                        'Language',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      trailing: DropdownButton<String>(
+                        value: 'فارسی',
+                        dropdownColor: drawerBackground,
+                        style: const TextStyle(color: Colors.white),
+                        underline: Container(),
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            onLanguageChanged(value);
+                          }
+                        },
+                        items: <String>['فارسی', 'English']
+                            .map<DropdownMenuItem<String>>(
+                                (String value) => DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    ))
+                            .toList(),
+                      ),
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.backup,
+                      title: 'Backup',
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const BackupScreen()));
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.share,
+                      title: 'Share',
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ShareScreen()));
+                      },
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      icon: Icons.info_outline,
+                      title: 'About',
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AboutScreen()));
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: isDarkMode ? Colors.black : Colors.white),
+      title: Text(title,
+          style: TextStyle(color: isDarkMode ? Colors.black : Colors.white)),
+      onTap: onTap,
+    );
+  }
+}

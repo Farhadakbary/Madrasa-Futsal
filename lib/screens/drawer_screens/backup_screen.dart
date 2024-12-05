@@ -27,6 +27,17 @@ class BackupScreen extends StatelessWidget {
       _showSnackBar(context, 'Error during restore: $e');
     }
   }
+  Future<void> _deleteData(BuildContext context) async {
+    try {
+      await _showLoadingDialog(context, 'Deleting data...');
+      await DatabaseHelper.instance.clearDatabase();
+      Navigator.pop(context);
+      _showSnackBar(context, 'Data deleted successfully!');
+    } catch (e) {
+      Navigator.pop(context);
+      _showSnackBar(context, 'Error during delete: $e');
+    }
+  }
 
   Future<void> _showLoadingDialog(BuildContext context, String message) async {
     showDialog(
@@ -69,7 +80,7 @@ class BackupScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 5),
       ),
     );
   }
@@ -121,6 +132,13 @@ class BackupScreen extends StatelessWidget {
               icon: Icons.cloud_download,
               color: Colors.blue.shade700,
               onTap: () => _restoreData(context),
+            ),
+            _buildActionTile(
+              context,
+              title: 'Delete Database',
+              icon: Icons.cloud_upload,
+              color: Colors.red.shade700,
+              onTap: () => _deleteData(context),
             ),
           ],
         ),

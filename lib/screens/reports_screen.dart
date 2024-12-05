@@ -5,12 +5,11 @@ import 'dart:io';
 class ReportsScreen extends StatelessWidget {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-  // نمایش دیالوگ بازیکنان
   Future<void> _showPlayersDialog(
-      BuildContext context,
-      String title,
-      Future<List<Map<String, dynamic>>> fetchFunction,
-      ) async {
+    BuildContext context,
+    String title,
+    Future<List<Map<String, dynamic>>> fetchFunction,
+  ) async {
     try {
       final players = await fetchFunction;
 
@@ -24,30 +23,28 @@ class ReportsScreen extends StatelessWidget {
               child: players.isEmpty
                   ? const Text('No players found.')
                   : ListView.builder(
-                itemCount: players.length,
-                itemBuilder: (context, index) {
-                  final player = players[index];
-                  final registrationDate =
-                  DateTime.parse(player['registrationDate']);
-                  final daysPassed = DateTime
-                      .now()
-                      .difference(registrationDate)
-                      .inDays;
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: player['imagePath'] != null &&
-                          File(player['imagePath']).existsSync()
-                          ? FileImage(File(player['imagePath']))
-                          : const AssetImage('assets/image/team.jpg')
-                      as ImageProvider,
+                      itemCount: players.length,
+                      itemBuilder: (context, index) {
+                        final player = players[index];
+                        final registrationDate =
+                            DateTime.parse(player['registrationDate']);
+                        final daysPassed =
+                            DateTime.now().difference(registrationDate).inDays;
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: player['imagePath'] != null &&
+                                    File(player['imagePath']).existsSync()
+                                ? FileImage(File(player['imagePath']))
+                                : const AssetImage('assets/image/team.jpg')
+                                    as ImageProvider,
+                          ),
+                          title: Text(
+                              '${player['firstName']} ${player['lastName']}'),
+                          subtitle:
+                              Text('Days since registration: $daysPassed'),
+                        );
+                      },
                     ),
-                    title: Text(
-                        '${player['firstName']} ${player['lastName']}'),
-                    subtitle:
-                    Text('Days since registration: $daysPassed'),
-                  );
-                },
-              ),
             ),
             actions: [
               TextButton(
@@ -59,7 +56,6 @@ class ReportsScreen extends StatelessWidget {
         },
       );
     } catch (e) {
-      print('Error fetching players: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error fetching players.')),
       );
@@ -108,8 +104,6 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-
-  // ساخت کارت‌های زمانی
   List<Widget> _buildTimeBasedCards(BuildContext context) {
     final times = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
     return times.map((time) {
@@ -123,14 +117,13 @@ class ReportsScreen extends StatelessWidget {
     }).toList();
   }
 
-  // ساخت کارت گزارش
   Widget _buildReportCard(
-      BuildContext context, {
-        required String title,
-        required IconData icon,
-        required Color color,
-        required Future<List<Map<String, dynamic>>> fetchFunction,
-      }) {
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required Future<List<Map<String, dynamic>>> fetchFunction,
+  }) {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

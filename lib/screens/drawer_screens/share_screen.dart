@@ -166,7 +166,7 @@ class _ShareScreenState extends State<ShareScreen>
   @override
   void dispose() {
     _controller
-        .dispose(); // Ensure the animation controller is disposed of properly
+        .dispose();
     super.dispose();
   }
 }

@@ -13,14 +13,16 @@ class AddMainTeamPlayerScreen extends StatefulWidget {
 }
 
 class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
+  final _contractDurationController = TextEditingController();
+  String _selectedUnit = 'Year';
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _jerseyNumberController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _salaryController = TextEditingController();
-  final TextEditingController _contractDurationController =
-  TextEditingController();
+  final TextEditingController _registrationDateController =
+      TextEditingController();
 
   File? _imageFile;
   String? _selectedPosition;
@@ -39,10 +41,25 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
     _registrationDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _registrationDateController.text =
+            DateFormat('yyyy-MM-dd').format(pickedDate);
+      });
+    }
+  }
+
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage =
-    await picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
@@ -99,7 +116,10 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Main Team Player',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Add Main Team Player',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),
@@ -175,7 +195,10 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                   items: _positions.map((position) {
                     return DropdownMenuItem(
                       value: position,
-                      child: Text(position,style:const TextStyle(color: Colors.green),),
+                      child: Text(
+                        position,
+                        style: const TextStyle(color: Colors.green),
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -191,21 +214,52 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _contractDurationController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Contract Duration (1-5 years)',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    final duration = int.tryParse(value ?? '') ?? 0;
-                    if (duration < 1 || duration > 5) {
-                      return 'Enter a valid duration (1-5)';
-                    }
-                    return null;
-                  },
+                Row(
+                  children: [
+                    // TextFormField for contract duration
+                    Expanded(
+                      child: TextFormField(
+                        controller: _contractDurationController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Contract Duration (1-5)',
+                          labelStyle: TextStyle(color: Colors.green),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          final duration = int.tryParse(value ?? '') ?? 0;
+                          if (duration < 1 || duration > 5) {
+                            return 'Enter a valid duration (1-5)';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // DropdownButton for selecting month/year
+                    DropdownButton<String>(
+                      value: _selectedUnit,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Month',
+                          child: Text(
+                            'Month',
+                            style: TextStyle(color: Colors.green),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Year',
+                          child: Text('Year',
+                              style: TextStyle(color: Colors.green)),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedUnit = value ?? 'Month';
+                        });
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -230,6 +284,34 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the age';
                     }
+                    final age = int.tryParse(value);
+                    if (age == null || age < 7 || age > 60) {
+                      return 'Age must be between 7 and 40';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _registrationDateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Registration Date',
+                    labelStyle: TextStyle(color: Colors.green),
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () {
+                    FocusScope.of(context)
+                        .requestFocus(FocusNode()); // Hide the keyboard
+                    _selectDate(context);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a registration date';
+                    }
                     return null;
                   },
                 ),
@@ -239,24 +321,22 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                     _imageFile != null
                         ? Image.file(_imageFile!, width: 80, height: 80)
                         : Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.person, size: 50),
-                    ),
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.person, size: 50),
+                          ),
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: _pickImage,
-                      style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: const Text(
+                        'Pick Image',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Registration Date: $_registrationDate',
-                  style: const TextStyle(fontSize: 16, color: Colors.green),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -268,11 +348,13 @@ class _AddMainTeamPlayerScreenState extends State<AddMainTeamPlayerScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 32, vertical: 12),
                       ),
-                      child: const Text('Save',style: TextStyle(color: Colors.green)),
+                      child: const Text('Save',
+                          style: TextStyle(color: Colors.green)),
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel',style: TextStyle(color: Colors.black)),
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.black)),
                     ),
                   ],
                 ),
