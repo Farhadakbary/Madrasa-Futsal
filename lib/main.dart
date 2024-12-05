@@ -33,6 +33,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+
 class SplashScreen extends StatefulWidget {
   final ValueChanged<bool>? onThemeChanged;
 
