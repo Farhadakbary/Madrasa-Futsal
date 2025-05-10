@@ -31,33 +31,58 @@ class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Main Team Players',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Main Team Players'),
         centerTitle: true,
-        backgroundColor: Colors.green.shade700,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
         child: _mainTeamPlayers.isEmpty
-            ? const Center(
-                child: Text(
-                  'No players in the main team yet.',
-                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+            ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.people_alt_outlined,
+                  size: 80, color: colors.onSurface.withOpacity(0.3)),
+              const SizedBox(height: 20),
+              Text(
+                'No Players Found',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: colors.onSurface.withOpacity(0.5),
+                  fontWeight: FontWeight.w600,
                 ),
-              )
-            : ListView.builder(
-                itemCount: _mainTeamPlayers.length,
-                itemBuilder: (context, index) {
-                  final player = _mainTeamPlayers[index];
-                  return _buildPlayerTile(player, size);
-                },
               ),
+            ],
+          ),
+        )
+            : ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: _mainTeamPlayers.length,
+          itemBuilder: (context, index) {
+            final player = _mainTeamPlayers[index];
+            return _buildPlayerCard(player, colors, context);
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -69,101 +94,148 @@ class _MainTeamPlayersListScreenState extends State<MainTeamPlayersListScreen> {
           );
           _loadMainTeamPlayers();
         },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add,color: Colors.white,),
+        backgroundColor: colors.primary,
+        child: Icon(Icons.add, color: colors.onPrimary),
       ),
     );
   }
 
-  Widget _buildPlayerTile(Map<String, dynamic> player, Size size) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  Widget _buildPlayerCard(
+      Map<String, dynamic> player, ColorScheme colors, BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: colors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withOpacity(0.1),
+            blurRadius: 12,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(10),
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundColor: Colors.green.shade100,
-          child: player['imagePath'] != null
-              ? ClipOval(
-            child: Image.file(
-              File(player['imagePath']),
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
-          )
-              : const Icon(
-            Icons.person,
-            size: 40,
-            color: Colors.black,
+        contentPadding: const EdgeInsets.all(16),
+        leading: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.primary.withOpacity(0.2), width: 2),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: player['imagePath'] != null
+                ? Image.file(File(player['imagePath']), fit: BoxFit.cover)
+                : Icon(Icons.person_outline,
+                size: 20, color: colors.primary),
           ),
         ),
         title: Text(
           '${player['firstName']} ${player['lastName']}',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: colors.onSurface,
           ),
         ),
-        subtitle: Text(
-          'Jersey No: ${player['jerseyNumber']} | Position: ${player['position']}',
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-          ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                _buildInfoChip(
+                  label: '${player['jerseyNumber']}',
+                  icon: Icons.numbers,
+                  colors: colors,
+                ),
+                const SizedBox(width: 4),
+                _buildInfoChip(
+                  label: player['position'],
+                  icon: Icons.sports_soccer,
+                  colors: colors,
+                ),
+              ],
+            ),
+          ],
         ),
-        tileColor: Colors.white,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
+              icon: Icon(Icons.edit, color: colors.primary,size: 20),
               onPressed: () async {
                 final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            EditMainTeamPlayerScreen(player: player)));
-                if (result == true) {
-                  _loadMainTeamPlayers();
-                }
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditMainTeamPlayerScreen(player: player),
+                  ),
+                );
+                if (result == true) _loadMainTeamPlayers();
               },
-              icon: const Icon(Icons.edit,color: Colors.green,),
             ),
             IconButton(
-              onPressed: () async {
-                final confirmation = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Confirm Delete'),
-                      content: const Text(
-                          'Are you sure you want to delete this player?'),
-                      actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel')),
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Delete',style: TextStyle(color: Colors.red),)),
-                      ],
-                    );
-                  },
-                );
-
-                if (confirmation == true) {
-                  await _dbHelper.deleteMainTeamPlayer(player['id']);
-
-                  _loadMainTeamPlayers();
-                }
-              },
-              icon: const Icon(Icons.delete,color: Colors.red,),
+              icon: Icon(Icons.delete, color: colors.error,size: 20,),
+              onPressed: () => _confirmDelete(player['id'], colors, context),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildInfoChip({
+    required String label,
+    required IconData icon,
+    required ColorScheme colors,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: colors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: colors.primary),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 6,
+              fontWeight: FontWeight.w500,
+              color: colors.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(
+      int id, ColorScheme colors, BuildContext context) async {
+    final confirmation = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Player', style: TextStyle(color: colors.error)),
+        content: const Text('Are you sure you want to delete this player?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Cancel', style: TextStyle(color: colors.onSurface))),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Delete', style: TextStyle(color: colors.error))),
+        ],
+      ),
+    );
+
+    if (confirmation == true) {
+      await _dbHelper.deleteMainTeamPlayer(id);
+      _loadMainTeamPlayers();
+    }
   }
 }

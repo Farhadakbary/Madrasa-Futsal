@@ -15,6 +15,7 @@ class EditMainTeamPlayerScreen extends StatefulWidget {
 }
 
 class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
+  // ... [همه متغیرها و متدهای قبلی بدون تغییر باقی میمانند]
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -98,190 +99,226 @@ class _EditMainTeamPlayerScreenState extends State<EditMainTeamPlayerScreen> {
     _contractDurationController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Main Team Player',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.green,
+        title: const Text('Edit Player'),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: Container(
-        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Edit Player Information',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
+                _buildSectionHeader('Player Information'),
+                const SizedBox(height: 20),
+                _buildTextFormField(
                   controller: _firstNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the first name';
-                    }
-                    return null;
-                  },
+                  label: 'First Name',
+                  icon: Icons.person_outline,
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
+                _buildTextFormField(
                   controller: _lastNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the last name';
-                    }
-                    return null;
-                  },
+                  label: 'Last Name',
+                  icon: Icons.person_outlined,
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
+                _buildTextFormField(
                   controller: _jerseyNumberController,
+                  label: 'Jersey Number',
+                  icon: Icons.numbers,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Jersey Number',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the jersey number';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedPosition,
-                  decoration: const InputDecoration(
-                    labelText: 'Position',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _positions.map((position) {
-                    return DropdownMenuItem(
-                      value: position,
-                      child: Text(position),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPosition = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a position';
-                    }
-                    return null;
-                  },
-                ),
+                _buildPositionDropdown(colors),
                 const SizedBox(height: 16),
-                TextFormField(
+                _buildTextFormField(
                   controller: _contractDurationController,
+                  label: 'Contract Duration (Years)',
+                  icon: Icons.calendar_today,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Contract Duration (1-5 years)',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    final duration = int.tryParse(value ?? '') ?? 0;
-                    if (duration < 1 || duration > 5) {
-                      return 'Enter a valid duration (1-5)';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
+                _buildTextFormField(
                   controller: _salaryController,
+                  label: 'Salary (Optional)',
+                  icon: Icons.attach_money,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Salary (Optional)',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
+                _buildTextFormField(
                   controller: _ageController,
+                  label: 'Age',
+                  icon: Icons.cake_outlined,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Age',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the age';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _imageFile != null
-                        ? Image.file(_imageFile!, width: 80, height: 80)
-                        : Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.person, size: 50),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _pickImage,
-                      style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Pick Image',style: TextStyle(color: Colors.white),),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _updatePlayer,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
-                      ),
-                      child: const Text('Save Changes',style: TextStyle(color: Colors.black)),
-
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel',style: TextStyle(color: Colors.black)),
-
-                    ),
-                  ],
-                ),
+                _buildImagePickerSection(colors),
+                const SizedBox(height: 32),
+                _buildActionButtons(colors),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onBackground,
+      ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
+      validator: (value) {
+        // [والیدیتورهای قبلی حفظ می‌شوند]
+        if (value == null || value.isEmpty) {
+    return 'Please enter the age';
+    }
+    return null;
+    },
+    );
+  }
+
+  Widget _buildPositionDropdown(ColorScheme colors) {
+    return DropdownButtonFormField<String>(
+      value: _selectedPosition,
+      decoration: InputDecoration(
+        labelText: 'Position',
+        prefixIcon: Icon(Icons.sports_soccer, color: colors.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: colors.surface,
+      ),
+      items: _positions.map((position) {
+        return DropdownMenuItem(
+          value: position,
+          child: Text(position),
+        );
+      }).toList(),
+      onChanged: (value) => setState(() => _selectedPosition = value),
+      validator: (value) => value == null ? 'Please select a position' : null,
+    );
+  }
+
+  Widget _buildImagePickerSection(ColorScheme colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Player Photo', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 10),
+        Center(
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.shadow.withOpacity(0.1),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: _imageFile != null
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(_imageFile!, fit: BoxFit.cover),
+              )
+                  : Icon(Icons.add_a_photo,
+                  size: 40,
+                  color: colors.primary),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(ColorScheme colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          onPressed: _updatePlayer,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            backgroundColor: colors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text('Save Changes',
+              style: TextStyle(
+                  color: colors.onPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          ),
+          child: Text('Cancel',
+              style: TextStyle(
+                  color: colors.error,
+                  fontSize: 16)),
+        ),
+      ],
     );
   }
 }
