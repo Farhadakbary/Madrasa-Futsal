@@ -264,7 +264,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         ElevatedButton(
           onPressed: _saveNote,
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
             backgroundColor: colors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
