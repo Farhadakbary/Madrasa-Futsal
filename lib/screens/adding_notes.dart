@@ -49,8 +49,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         'description': _descriptionController.text,
       };
 
-      final id = await DatabaseHelper.instance
-          .insertGameNote(note);
+      final id = await DatabaseHelper.instance.insertGameNote(note);
 
       if (id > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,145 +77,223 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Match Note',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.green,
+        title: const Text('Edit Match Report'),
         centerTitle: true,
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Match Note Information',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _teamNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Your Team Name',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your team name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _opponentTeamController,
-                  decoration: const InputDecoration(
-                    labelText: 'Opponent Team Name',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the opponent team name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _matchResultController,
-                  decoration: const InputDecoration(
-                    labelText: 'Match Result',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the match result';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Match Date: $_matchDate',
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.green),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _selectDate(context),
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Select Date',style: TextStyle(color: Colors.white),),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _topScorerController,
-                  decoration: const InputDecoration(
-                    labelText: 'Top Scorer',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the top scorer';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Match Description',
-                    labelStyle: TextStyle(color: Colors.green),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please provide a description of the match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _saveNote,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
-                      ),
-                      child: const Text('Save',style: TextStyle(color: Colors.green)),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel',style: TextStyle(color: Colors.black),),
-                    ),
-                  ],
-                ),
-              ],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
         ),
       ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildFormHeader('Match Details'),
+                  const SizedBox(height: 20),
+                  _buildTeamInputField(colors),
+                  const SizedBox(height: 16),
+                  _buildOpponentInputField(colors),
+                  const SizedBox(height: 16),
+                  _buildResultInputField(colors),
+                  const SizedBox(height: 16),
+                  _buildDateSelector(colors),
+                  const SizedBox(height: 16),
+                  _buildScorerInputField(colors),
+                  const SizedBox(height: 16),
+                  _buildDescriptionField(colors),
+                  const SizedBox(height: 32),
+                  _buildActionButtons(colors),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormHeader(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onBackground,
+        letterSpacing: 0.5,
+      ),
+    );
+  }
+
+  Widget _buildTeamInputField(ColorScheme colors) {
+    return _buildFormField(
+      controller: _teamNameController,
+      label: 'Team Name',
+      icon: Icons.groups_rounded,
+      colors: colors,
+    );
+  }
+
+  Widget _buildOpponentInputField(ColorScheme colors) {
+    return _buildFormField(
+      controller: _opponentTeamController,
+      label: 'Opponent Team',
+      icon: Icons.sports_soccer_rounded,
+      colors: colors,
+    );
+  }
+
+  Widget _buildResultInputField(ColorScheme colors) {
+    return _buildFormField(
+      controller: _matchResultController,
+      label: 'Match Result',
+      icon: Icons.scoreboard_rounded,
+      colors: colors,
+    );
+  }
+
+  Widget _buildScorerInputField(ColorScheme colors) {
+    return _buildFormField(
+      controller: _topScorerController,
+      label: 'Top Scorer',
+      icon: Icons.emoji_events_rounded,
+      colors: colors,
+    );
+  }
+
+  Widget _buildFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required ColorScheme colors,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: colors.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: colors.surface,
+      ),
+      validator: (value) => value!.isEmpty ? 'This field is required' : null,
+    );
+  }
+
+  Widget _buildDateSelector(ColorScheme colors) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.event_rounded, color: colors.primary),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              DateFormat('MMMM dd, yyyy').format(DateTime.parse(_matchDate!)),
+              style: TextStyle(
+                fontSize: 16,
+                color: colors.onSurface,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.edit_calendar_rounded, color: colors.primary),
+            onPressed: () => _selectDate(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionField(ColorScheme colors) {
+    return TextFormField(
+      controller: _descriptionController,
+      maxLines: 5,
+      decoration: InputDecoration(
+        labelText: 'Match Analysis',
+        alignLabelWithHint: true,
+        prefixIcon: Icon(Icons.description_rounded, color: colors.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: colors.surface,
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(ColorScheme colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          onPressed: _saveNote,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+            backgroundColor: colors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            'SAVE CHANGES',
+            style: TextStyle(
+              color: colors.onPrimary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+          ),
+          child: Text(
+            'CANCEL',
+            style: TextStyle(
+              color: colors.error,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
