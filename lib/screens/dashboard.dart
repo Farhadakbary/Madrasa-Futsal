@@ -129,21 +129,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
               context,
               title: 'Players',
               icon: Icons.people_alt_rounded,
-              color: colors.secondary,
+              color: Colors.purpleAccent.shade100,
               route: const MainTeamPlayersListScreen(),
             ),
             _buildActionCard(
               context,
               title: 'Trainers',
               icon: Icons.fitness_center_rounded,
-              color: colors.tertiary,
+              color: Colors.purpleAccent.shade100,
               route: const PlayersListScreen(),
             ),
             _buildActionCard(
               context,
               title: 'Tactics',
               icon: Icons.track_changes_rounded,
-              color: colors.errorContainer,
+              color: Colors.purpleAccent.shade100,
               route:  FutsalField(),
             ),
           ],
@@ -169,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 context,
                 title: 'Match Reports',
                 icon: Icons.assignment_rounded,
-                color: colors.primaryContainer,
+                color: Colors.purple.shade200,
                 route:  ReportsScreen(),
               ),
             ),
@@ -179,7 +179,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 context,
                 title: 'Match Notes',
                 icon: Icons.note_alt_rounded,
-                color: colors.secondaryContainer,
+                color: Colors.purple.shade200,
                 route: const NotesListScreen(),
               ),
             ),
@@ -202,7 +202,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.surfaceVariant,
+            color: colors.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(

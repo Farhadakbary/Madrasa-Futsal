@@ -42,12 +42,10 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
       _filteredPlayers = _players.where((player) {
         final matchesTime =
             _selectedTime == 'All' || player.registrationTime == _selectedTime;
-
         final matchesSearch = player.firstName
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
+            .toLowerCase()
+            .contains(_searchQuery.toLowerCase()) ||
             player.lastName.toLowerCase().contains(_searchQuery.toLowerCase());
-
         return matchesTime && matchesSearch;
       }).toList();
     });
@@ -55,287 +53,272 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Players List',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Players List'),
         centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: SizedBox(
-              width: 200,
-              child: TextField(
-                onChanged: (query) {
-                  setState(() {
-                    _searchQuery = query;
-                    _applyFilters();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  hintStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                  border: InputBorder.none,
-                  filled: true,
-                  fillColor: Colors.blue.shade600,
-                ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            width: 200,
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextField(
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                  _applyFilters();
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: Icon(Icons.search, color: colors.primary),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
           ),
-          PopupMenuButton<String>(
-            icon: const Icon(
-              Icons.filter_list,
-              color: Colors.white,
-            ),
-            onSelected: (value) {
-              setState(() {
-                _selectedTime = value;
-                _applyFilters();
-              });
-            },
-            itemBuilder: (context) {
-              return <PopupMenuEntry<String>>[
-                const PopupMenuItem(value: 'All', child: Text('All')),
-                const PopupMenuItem(value: '10:00', child: Text('10:00')),
-                const PopupMenuItem(value: '12:00', child: Text('12:00')),
-                const PopupMenuItem(value: '14:00', child: Text('14:00')),
-                const PopupMenuItem(value: '16:00', child: Text('16:00')),
-                const PopupMenuItem(value: '18:00', child: Text('18:00')),
-                const PopupMenuItem(value: '20:00', child: Text('20:00')),
-              ];
-            },
+          IconButton(
+            icon: Icon(Icons.filter_list_outlined, color: colors.onPrimary),
+            onPressed: _showFilterMenu,
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
         child: _filteredPlayers.isEmpty
-            ? const Center(
-                child: Text(
-                  'No players found.',
-                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+            ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.people_alt_outlined,
+                  size: 80, color: colors.onSurface.withOpacity(0.3)),
+              const SizedBox(height: 16),
+              Text(
+                'No Players Found',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: colors.onSurface.withOpacity(0.5),
                 ),
-              )
-            : ListView.builder(
-                itemCount: _filteredPlayers.length,
-                itemBuilder: (context, index) {
-                  final player = _filteredPlayers[index];
-                  return _buildPlayerTile(player);
-                },
               ),
+            ],
+          ),
+        )
+            : ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: _filteredPlayers.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) =>
+              _buildPlayerTile(_filteredPlayers[index], colors),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => const AddFutsalPlayerScreen()),
+            MaterialPageRoute(builder: (context) => const AddFutsalPlayerScreen()),
           );
           _loadPlayers();
         },
-        backgroundColor: Colors.blue,
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+        backgroundColor: colors.primary,
+        child: Icon(Icons.add, color: colors.onPrimary),
       ),
     );
   }
 
-  Widget _buildPlayerTile(FutsalPlayer player) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  Widget _buildPlayerTile(FutsalPlayer player, ColorScheme colors) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(10),
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundColor: Colors.blue.shade100,
-          child: player.imagePath != null
-              ? ClipOval(
-                  child: Image.file(
-                    File(player.imagePath!),
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : const Icon(
-                  Icons.person,
-                  size: 40,
-                  color: Colors.black,
-                ),
+        contentPadding: const EdgeInsets.all(16),
+        leading: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: colors.primaryContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: player.imagePath != null
+                ? Image.file(File(player.imagePath!), fit: BoxFit.cover)
+                : Icon(Icons.person, color: colors.primary),
+          ),
         ),
         title: Text(
           '${player.firstName} ${player.lastName}',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: colors.onSurface,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Plays in: ${player.position}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            Text(
-              'Registered on: ${player.registrationDate}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            Text(
-              'Registered at: ${player.registrationTime}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
+            const SizedBox(height: 4),
+            _buildInfoRow(Icons.sports_soccer, player.position, colors),
+            _buildInfoRow(Icons.calendar_today, player.registrationDate!, colors),
+            _buildInfoRow(Icons.access_time, player.registrationTime, colors),
           ],
         ),
-        tileColor: Colors.white,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              onPressed: () async {
-                final updatedPlayer = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EditFutsalPlayerScreen(player: player),
-                  ),
-                );
-
-                if (updatedPlayer != null) {
-                  setState(() {
-                    final index =
-                        _players.indexWhere((p) => p.id == updatedPlayer.id);
-                    if (index != -1) {
-                      _players[index] = updatedPlayer;
-                      _applyFilters();
-                    }
-                  });
-                }
-              },
-              icon: const Icon(
-                Icons.edit,
-                color: Colors.blue,
-              ),
+              icon: Icon(Icons.edit, color: colors.primary),
+              onPressed: () => _editPlayer(player),
             ),
             IconButton(
-              onPressed: () async {
-                final confirmation = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Confirm Delete'),
-                      content: const Text(
-                          'Are you sure you want to delete this player?'),
-                      actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel')),
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
-                            )),
-                      ],
-                    );
-                  },
-                );
-
-                if (confirmation == true) {
-                  await _dbHelper.deletePlayer(player.id!);
-
-                  _loadPlayers();
-                }
-              },
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
+              icon: Icon(Icons.delete, color: colors.error),
+              onPressed: () => _confirmDelete(player.id!, colors),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class PlayerSearchDelegate extends SearchDelegate<String> {
-  final List<FutsalPlayer> players;
-  final ValueChanged<String> onSearchSelected;
-
-  PlayerSearchDelegate({required this.players, required this.onSearchSelected});
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
+  Widget _buildInfoRow(IconData icon, String text, ColorScheme colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: colors.onSurface.withOpacity(0.6)),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12,
+                color: colors.onSurface.withOpacity(0.6),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
-    ];
+    );
   }
 
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, '');
+  void _showFilterMenu() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Filter by Time', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  'All',
+                  '10:00',
+                  '12:00',
+                  '14:00',
+                  '16:00',
+                  '18:00',
+                  '20:00',
+                ].map((time) {
+                  return ChoiceChip(
+                    label: Text(time),
+                    selected: _selectedTime == time,
+                    onSelected: (selected) {
+                      setState(() => _selectedTime = selected ? time : 'All');
+                      _applyFilters();
+                      Navigator.pop(context);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
       },
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    onSearchSelected(query);
-    close(context, query);
-    return Container();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestions = players
-        .where((player) =>
-            player.firstName.toLowerCase().contains(query.toLowerCase()) ||
-            player.lastName.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          final player = suggestions[index];
-          return ListTile(
-            title: Text('${player.firstName} ${player.lastName}'),
-            onTap: () {
-              query = '${player.firstName} ${player.lastName}';
-              showResults(context);
-            },
-          );
-        },
+  Future<void> _confirmDelete(int id, ColorScheme colors) async {
+    final confirmation = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Player', style: TextStyle(color: colors.error)),
+        content: const Text('Are you sure you want to delete this player?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel', style: TextStyle(color: colors.onSurface)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Delete', style: TextStyle(color: colors.error)),
+          ),
+        ],
       ),
     );
+
+    if (confirmation == true) {
+      await _dbHelper.deletePlayer(id);
+      _loadPlayers();
+    }
+  }
+
+  Future<void> _editPlayer(FutsalPlayer player) async {
+    final updatedPlayer = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditFutsalPlayerScreen(player: player),
+      ),
+    );
+
+    if (updatedPlayer != null) {
+      setState(() {
+        final index = _players.indexWhere((p) => p.id == updatedPlayer.id);
+        if (index != -1) {
+          _players[index] = updatedPlayer;
+          _applyFilters();
+        }
+      });
+    }
   }
 }

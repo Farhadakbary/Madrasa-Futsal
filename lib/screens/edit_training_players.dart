@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:futsal/database/player_modle.dart';
-import 'package:futsal/screens/trianing_player_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import '../database/helper.dart';
 import 'package:intl/intl.dart';
 
 class EditFutsalPlayerScreen extends StatefulWidget {
   final FutsalPlayer player;
-  const EditFutsalPlayerScreen({Key? key, required this.player,})
-      : super(key: key);
+  const EditFutsalPlayerScreen({Key? key, required this.player}) : super(key: key);
 
   @override
   _EditFutsalPlayerScreenState createState() => _EditFutsalPlayerScreenState();
@@ -23,7 +21,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _feeController = TextEditingController();
   final TextEditingController _registrationDateController =
-      TextEditingController();
+  TextEditingController();
 
   File? _imageFile;
   String? _selectedPosition;
@@ -69,7 +67,7 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage =
-        await picker.pickImage(source: ImageSource.camera);
+    await picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
@@ -137,205 +135,248 @@ class _EditFutsalPlayerScreenState extends State<EditFutsalPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Edit Futsal Player',
-          style: TextStyle(color: Colors.white),
+        title: const Text('Edit Player'),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
-        backgroundColor: Colors.blue,
       ),
       body: Container(
-        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Edit Player Information',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Enter first name'
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter last name' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Enter phone number'
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _ageController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Age',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter age' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _feeController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Fee',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter fee' : null,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _positions.contains(_selectedPosition)
-                      ? _selectedPosition
-                      : _positions.first,
-                  decoration: const InputDecoration(
-                    labelText: 'Position',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _positions.map((position) {
-                    return DropdownMenuItem(
-                      value: position,
-                      child: Text(position),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPosition = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _times.contains(_selectedTime)
-                      ? _selectedTime
-                      : _times.first,
-                  decoration: const InputDecoration(
-                    labelText: 'Registration Time',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _times.map((time) {
-                    return DropdownMenuItem(
-                      value: time,
-                      child: Text(time),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedTime = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _registrationDateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Registration Date',
-                    labelStyle: TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () {
-                    FocusScope.of(context)
-                        .requestFocus(FocusNode()); // Hide the keyboard
-                    _selectDate(context);
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select a registration date';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _imageFile != null
-                        ? Image.file(_imageFile!, width: 80, height: 80)
-                        : const CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey,
-                            child: Icon(Icons.person, size: 40),
-                          ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _pickImage,
-                     style:  ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                      child: const Text('Pick Image',style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
+                Text('Edit Player Details', style: textTheme.headlineSmall),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _updatePlayer,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
-                      ),
-                      child: const Text(
-                        'Save Changes',
-                        style: TextStyle(fontSize: 12,color: Colors.blue),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const PlayersListScreen()));
-                      },
-                      child: const Text('Cancel',style: TextStyle(color: Colors.black)),
-                    ),
-                  ],
+                _buildFormField(
+                  controller: _firstNameController,
+                  label: 'First Name',
+                  icon: Icons.person_outline,
                 ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  controller: _lastNameController,
+                  label: 'Last Name',
+                  icon: Icons.person_outlined,
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  controller: _phoneController,
+                  label: 'Phone Number',
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  controller: _ageController,
+                  label: 'Age',
+                  icon: Icons.cake_outlined,
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  controller: _feeController,
+                  label: 'Fee',
+                  icon: Icons.attach_money,
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                _buildDropdownFormField(
+                  value: _selectedPosition,
+                  label: 'Position',
+                  icon: Icons.sports_soccer,
+                  items: _positions,
+                  onChanged: (value) => setState(() => _selectedPosition = value),
+                ),
+                const SizedBox(height: 16),
+                _buildDropdownFormField(
+                  value: _selectedTime,
+                  label: 'Training Time',
+                  icon: Icons.access_time,
+                  items: _times,
+                  onChanged: (value) => setState(() => _selectedTime = value),
+                ),
+                const SizedBox(height: 16),
+                _buildDatePickerField(context, colors),
+                const SizedBox(height: 24),
+                _buildImageSection(colors),
+                const SizedBox(height: 32),
+                _buildActionButtons(colors),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFormField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
+      validator: (value) => value!.isEmpty ? 'This field is required' : null,
+    );
+  }
+
+  Widget _buildDropdownFormField({
+    required String? value,
+    required String label,
+    required IconData icon,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surface,
+      ),
+      items: items.map((item) {
+        return DropdownMenuItem(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildDatePickerField(BuildContext context, ColorScheme colors) {
+    return TextFormField(
+      controller: _registrationDateController,
+      decoration: InputDecoration(
+        labelText: 'Registration Date',
+        prefixIcon: Icon(Icons.calendar_today, color: colors.primary),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: colors.surface,
+      ),
+      onTap: () => _selectDate(context),
+      validator: (value) => value!.isEmpty ? 'Select a date' : null,
+    );
+  }
+
+  Widget _buildImageSection(ColorScheme colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Player Photo', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 12),
+        Center(
+          child: Column(
+            children: [
+              CircleAvatar(
+                radius: 60,
+                backgroundColor: colors.primaryContainer,
+                backgroundImage: _imageFile != null
+                    ? FileImage(_imageFile!)
+                    : widget.player.imagePath != null
+                    ? FileImage(File(widget.player.imagePath!))
+                    : null,
+                child: _imageFile == null && widget.player.imagePath == null
+                    ? Icon(Icons.person, size: 40, color: colors.primary)
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _pickImage,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text('Change Photo',
+                    style: TextStyle(color: colors.onPrimary)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(ColorScheme colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: _updatePlayer,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            backgroundColor: colors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            'SAVE CHANGES',
+            style: TextStyle(
+              color: colors.onPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          ),
+          child: Text(
+            'CANCEL',
+            style: TextStyle(
+              color: colors.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

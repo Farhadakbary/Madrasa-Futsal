@@ -22,9 +22,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
 
   Future<void> _loadNotes() async {
     final notes = await _dbHelper.getAllGameNotes();
-    setState(() {
-      _notes = notes;
-    });
+    setState(() => _notes = notes);
   }
 
   Future<void> _deleteNote(int id) async {
@@ -34,107 +32,141 @@ class _NotesListScreenState extends State<NotesListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Notes',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Match Reports'),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colors.primary, colors.primaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [colors.background, colors.surfaceVariant],
+          ),
+        ),
         child: _notes.isEmpty
-            ? const Center(
-                child: Text(
-                  'No notes added yet.',
-                  style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+            ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.note_alt_outlined,
+                  size: 80, color: colors.onSurface.withOpacity(0.3)),
+              const SizedBox(height: 20),
+              Text(
+                'No Reports Found',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: colors.onSurface.withOpacity(0.5),
                 ),
-              )
-            : ListView.builder(
-                itemCount: _notes.length,
-                itemBuilder: (context, index) {
-                  final note = _notes[index];
-                  return _buildNoteTile(note, size);
-                },
               ),
+            ],
+          ),
+        )
+            : ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: _notes.length,
+          itemBuilder: (context, index) =>
+              _buildNoteCard(_notes[index], colors),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
         onPressed: () async {
           final newNote = await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddNoteScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddNoteScreen()),
           );
-          if (newNote != null) {
-            _loadNotes();
-          }
+          if (newNote != null) _loadNotes();
         },
-        child: const Icon(Icons.add,color: Colors.white,),
+        backgroundColor: colors.primary,
+        child: Icon(Icons.add, color: colors.onPrimary),
       ),
     );
   }
 
-  Widget _buildNoteTile(Map<String, dynamic> note, Size size) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(10),
-        leading: CircleAvatar(
-          radius: 30,
-          backgroundColor: Colors.blue.shade100,
-          child: const Icon(
-            Icons.sticky_note_2_rounded,
-            color: Colors.green,
-            size: 30,
+  Widget _buildNoteCard(Map<String, dynamic> note, ColorScheme colors) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: colors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius: 2,
           ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(Icons.sports_soccer,
+              color: colors.primary),
         ),
         title: Text(
-          note['opponentTeam'] ?? 'No Opponent',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
+          note['opponentTeam'] ?? 'Unknown Team',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: colors.onSurface,
           ),
         ),
-        subtitle: Text(
-          'Date: ${note['matchDate'] ?? 'N/A'}',
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-          ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              'Date: ${note['matchDate'] ?? 'N/A'}',
+              style: TextStyle(
+                  fontSize: 14,
+                  color: colors.onSurface.withOpacity(0.7)),
+            ),
+            if (note['matchResult'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Result: ${note['matchResult']}',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: colors.primary),
+                ),
+              ),
+          ],
         ),
-        tileColor: Colors.white,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit, color: Colors.green),
+              icon: Icon(Icons.edit, color: colors.primary),
               onPressed: () async {
-                final updatedNote = await Navigator.push(
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditNoteScreen(note: note),
-                  ),
+                      builder: (context) => EditNoteScreen(note: note)),
                 );
-                if (updatedNote != null) {
-                  _loadNotes();
-                  _loadNotes(); // Refresh the list after editing
-                }
+                if (result != null) _loadNotes();
               },
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                _showDeleteConfirmationDialog(note['id']);
-              },
+              icon: Icon(Icons.delete, color: colors.error),
+              onPressed: () => _showDeleteDialog(note['id'], colors),
             ),
           ],
         ),
@@ -142,23 +174,24 @@ class _NotesListScreenState extends State<NotesListScreen> {
     );
   }
 
-  void _showDeleteConfirmationDialog(int id) {
+  void _showDeleteDialog(int id, ColorScheme colors) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Note'),
-        content: const Text('Are you sure you want to delete this note?'),
+        title: Text('Delete Report', style: TextStyle(color: colors.error)),
+        content: const Text('Are you sure you want to delete this report?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: colors.onSurface)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               _deleteNote(id);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: colors.error)),
           ),
         ],
       ),

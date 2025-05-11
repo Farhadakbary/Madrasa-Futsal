@@ -242,7 +242,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Widget _buildDescriptionField(ColorScheme colors) {
     return TextFormField(
       controller: _descriptionController,
-      maxLines: 5,
+      maxLines:5,
       decoration: InputDecoration(
         labelText: 'Match Analysis',
         alignLabelWithHint: true,
