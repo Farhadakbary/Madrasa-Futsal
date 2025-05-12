@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:futsal/database/helper.dart';
 
 class FutsalField extends StatefulWidget {
   @override
@@ -6,30 +8,30 @@ class FutsalField extends StatefulWidget {
 }
 
 class _FutsalFieldState extends State<FutsalField> {
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   Offset ballPosition = Offset.zero;
-  List<Offset> whitePlayers = [];
-  List<Offset> blackPlayers = [];
+  List<Player> whiteTeam = List.generate(
+    5,
+        (index) => Player(
+      position1: Offset.zero,
+      position: index == 4 ? 'Goalkeeper' : 'Player',
+    ),
+  );
+  List<Player> blackTeam = List.generate(
+    5,
+        (index) => Player(
+      position1: Offset.zero,
+      position: index == 4 ? 'Goalkeeper' : 'Player',
+    ),
+  );
   String selectedFormation = '3-1';
+
   final Map<String, List<Offset>> _formations = {
-    '3-1':const [
+    '3-1': const [
       Offset(0.2, 0.85), // Left defender
       Offset(0.5, 0.8),  // Center defender
       Offset(0.8, 0.85), // Right defender
       Offset(0.5, 0.65), // Pivot
-      Offset(0.5, 0.92), // Goalkeeper
-    ],
-    '2-2':const [
-      Offset(0.3, 0.8),  // Left back
-      Offset(0.7, 0.8),  // Right back
-      Offset(0.3, 0.65), // Left forward
-      Offset(0.7, 0.65), // Right forward
-      Offset(0.5, 0.92), // Goalkeeper
-    ],
-    '1-2-1':const [
-      Offset(0.5, 0.8),  // Center defender
-      Offset(0.3, 0.7),  // Left mid
-      Offset(0.7, 0.7),  // Right mid
-      Offset(0.5, 0.6),  // Forward
       Offset(0.5, 0.92), // Goalkeeper
     ],
   };
@@ -41,54 +43,83 @@ class _FutsalFieldState extends State<FutsalField> {
   }
 
   void _updateFormation() {
-    final size = MediaQuery.sizeOf(context);
+    final size = MediaQuery.of(context).size;
     setState(() {
       ballPosition = Offset(size.width / 2, size.height / 2);
-
-      whitePlayers = _formations[selectedFormation]!
-          .map((offset) => Offset(offset.dx * size.width, offset.dy * size.height))
-          .toList();
-
-      blackPlayers = _formations[selectedFormation]!
-          .map((offset) => Offset(offset.dx * size.width, (1 - offset.dy) * size.height))
-          .toList();
+      _applyFormation(whiteTeam, size, false);
+      _applyFormation(blackTeam, size, true);
     });
+  }
+
+  void _applyFormation(List<Player> team, Size size, bool isOpponent) {
+    final formation = _formations[selectedFormation]!;
+    for (int i = 0; i < 5; i++) {
+      final offset = formation[i];
+      team[i].position1 = Offset(
+        offset.dx * size.width,
+        isOpponent ? (1 - offset.dy) * size.height : offset.dy * size.height,
+      );
+    }
+  }
+
+  Future<void> _selectPlayer(int index, bool isWhiteTeam) async {
+    final players = await _dbHelper.getAllMainTeamPlayers();
+    final selected = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Player'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: players.length,
+            itemBuilder: (context, i) => ListTile(
+              leading: _buildPlayerAvatar(players[i]['imagePath']),
+              title: Text('${players[i]['firstName']} ${players[i]['lastName']}'),
+              subtitle: Text('No. ${players[i]['jerseyNumber']} • ${players[i]['position']}'),
+              onTap: () => Navigator.pop(context, players[i]),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (selected != null) {
+      setState(() {
+        if (isWhiteTeam) {
+          whiteTeam[index] = Player.fromMap(selected, whiteTeam[index].position1);
+        } else {
+          blackTeam[index] = Player.fromMap(selected, blackTeam[index].position1);
+        }
+      });
+    }
+  }
+
+  Widget _buildPlayerAvatar(String? imagePath) {
+    return CircleAvatar(
+      radius: 20,
+      backgroundImage: imagePath != null ? FileImage(File(imagePath)) : null,
+      child: imagePath == null ? const Icon(Icons.person) : null,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Futsal Tactical Board - $selectedFormation'),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                selectedFormation = value;
-                _updateFormation();
-              });
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: '3-1', child: Text('3-1 Formation')),
-              const PopupMenuItem(value: '2-2', child: Text('2-2 Formation')),
-              const PopupMenuItem(value: '1-2-1', child: Text('1-2-1 Formation')),
-            ],
-          ),
-        ],
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
             children: [
+
               Positioned.fill(
                 child: Image.asset(
                   'assets/image/futsal.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
-              ..._buildPlayers(whitePlayers, Colors.white, true),
-              ..._buildPlayers(blackPlayers, Colors.red, false),
-              _buildBall(ballPosition),
+              ..._buildTeam(whiteTeam, Colors.white, true),
+              ..._buildTeam(blackTeam, Colors.red, false),
+              _buildBall(),
             ],
           );
         },
@@ -96,35 +127,31 @@ class _FutsalFieldState extends State<FutsalField> {
     );
   }
 
-  List<Widget> _buildPlayers(List<Offset> players, Color color, bool isHomeTeam) {
-    return players.asMap().entries.map((entry) {
+  List<Widget> _buildTeam(List<Player> team, Color color, bool isWhiteTeam) {
+    return team.asMap().entries.map((entry) {
       final index = entry.key;
-      final position = entry.value;
+      final player = entry.value;
       final isGoalkeeper = index == 4;
 
       return Positioned(
-        left: position.dx - 25,
-        top: position.dy - 25,
-        child: Draggable(
-          feedback: _PlayerWidget(
-            number: index + 1,
-            color: isGoalkeeper ? Colors.yellow : color,
-            isGoalkeeper: isGoalkeeper,
-          ),
-          childWhenDragging: Opacity(opacity: 0.5, child: _PlayerWidget(
-            number: index + 1,
-            color: isGoalkeeper ? Colors.yellow : color,
-            isGoalkeeper: isGoalkeeper,
-          )),
-          onDragEnd: (details) {
+        left: player.position1.dx - 25,
+        top: player.position1.dy - 25,
+        child: GestureDetector(
+          onPanUpdate: (details) {
             if (!isGoalkeeper) {
               setState(() {
-                players[index] = details.offset;
+                player.position1 = Offset(
+                  (player.position1.dx + details.delta.dx)
+                      .clamp(0.0, MediaQuery.of(context).size.width - 50),
+                  (player.position1.dy + details.delta.dy)
+                      .clamp(0.0, MediaQuery.of(context).size.height - 50),
+                );
               });
             }
           },
+          onTap: () => _selectPlayer(index, isWhiteTeam),
           child: _PlayerWidget(
-            number: index + 1,
+            player: player,
             color: isGoalkeeper ? Colors.yellow : color,
             isGoalkeeper: isGoalkeeper,
           ),
@@ -133,14 +160,19 @@ class _FutsalFieldState extends State<FutsalField> {
     }).toList();
   }
 
-  Widget _buildBall(Offset position) {
+  Widget _buildBall() {
     return Positioned(
-      left: position.dx - 15,
-      top: position.dy - 15,
+      left: ballPosition.dx - 15,
+      top: ballPosition.dy - 15,
       child: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            ballPosition = details.localPosition + position - const Offset(15, 15);
+            ballPosition = Offset(
+              (ballPosition.dx + details.delta.dx)
+                  .clamp(0.0, MediaQuery.of(context).size.width - 30),
+              (ballPosition.dy + details.delta.dy)
+                  .clamp(0.0, MediaQuery.of(context).size.height - 30),
+            );
           });
         },
         child: Container(
@@ -171,13 +203,43 @@ class _FutsalFieldState extends State<FutsalField> {
   }
 }
 
+class Player {
+  int? id;
+  String firstName;
+  String lastName;
+  int jerseyNumber;
+  String position;
+  String? imagePath;
+  Offset position1;
+
+  Player({
+    this.id,
+    this.firstName = '',
+    this.lastName = '',
+    this.jerseyNumber = 0,
+    this.position = '',
+    this.imagePath,
+    required this.position1,
+  });
+
+  factory Player.fromMap(Map<String, dynamic> map, Offset position1) => Player(
+    id: map['id'],
+    firstName: map['firstName'],
+    lastName: map['lastName'],
+    jerseyNumber: map['jerseyNumber'],
+    position: map['position'],
+    imagePath: map['imagePath'],
+    position1: position1,
+  );
+}
+
 class _PlayerWidget extends StatelessWidget {
-  final int number;
+  final Player player;
   final Color color;
   final bool isGoalkeeper;
 
   const _PlayerWidget({
-    required this.number,
+    required this.player,
     required this.color,
     this.isGoalkeeper = false,
   });
@@ -188,7 +250,7 @@ class _PlayerWidget extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: color,
+        color: color.withOpacity(0.8),
         shape: BoxShape.circle,
         border: Border.all(color: Colors.black, width: 2),
         boxShadow: const [
@@ -199,22 +261,28 @@ class _PlayerWidget extends StatelessWidget {
           )
         ],
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isGoalkeeper)
-              const Icon(Icons.sports_handball, size: 20, color: Colors.black),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (player.imagePath != null)
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: FileImage(File(player.imagePath!)),
+            )
+          else
             Text(
-              '$number',
+              player.firstName,
               style: TextStyle(
-                fontSize: 16,
+                // fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+                color: color.computeLuminance() > 0.5
+                    ? Colors.black
+                    : Colors.white,
               ),
             ),
-          ],
-        ),
+          if (isGoalkeeper)
+            const Icon(Icons.sports_handball, size: 16, color: Colors.black),
+        ],
       ),
     );
   }
